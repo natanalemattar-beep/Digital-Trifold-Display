@@ -206,10 +206,9 @@ function Panel1() {
 // ── Panel 2 – El Problema ─────────────────────────────────────────────────
 function Panel2() {
   const stats = [
-    { num: "21M+",   label: "Líneas expuestas\na bloqueo CONATEL",  icon: Smartphone, color: LBLUE },
-    { num: "1.000×", label: "Multas máximas\nsobre el BCV",         icon: AlertTriangle, color: "#FB923C" },
-    { num: "134h",   label: "Al año perdidas\nen papeleo (OCDE)",    icon: Clock, color: LBLUE },
-    { num: "61%",    label: "PyMEs con\nincumplimiento laboral",     icon: BarChart3, color: NEON },
+    { num: "21M+",   label: "Líneas venezolanas\nexpuestas a bloqueo CONATEL", icon: Smartphone,    color: LBLUE,     wide: false },
+    { num: "1.000×", label: "Multas máximas\nsobre el BCV (LOTEL)",            icon: AlertTriangle, color: "#FB923C", wide: false },
+    { num: "134h",   label: "Horas al año perdidas en\ncumplimiento (OCDE)",   icon: Clock,         color: LBLUE,     wide: true  },
   ];
 
   return (
@@ -223,8 +222,9 @@ function Panel2() {
       <Divider />
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px", flex: 1, minHeight: 0 }}>
-        {stats.map(({ num, label, icon: Icon, color }) => (
+        {stats.map(({ num, label, icon: Icon, color, wide }) => (
           <div key={num} style={{
+            gridColumn: wide ? "1 / -1" : undefined,
             background: `${color}08`,
             border: `1px solid ${color}22`,
             borderRadius: "12px",
@@ -461,8 +461,6 @@ function Panel5() {
     { year: "2027", text: "Expansión Colombia / Panamá" },
     { year: "2028+", text: "Evaluación México / EE.UU." },
   ];
-  const market = ["500K PyMEs · Venezuela", "8.5M · Latam", "21M+ consumidores"];
-
   return (
     <div style={panel}>
       <SectionHeader icon={Handshake} title="Aliados" accent="estratégicos" />
@@ -533,20 +531,6 @@ function Panel5() {
         ))}
       </div>
 
-      <Divider />
-
-      {/* Market pills */}
-      <div style={{ display: "flex", gap: "5px", flexWrap: "wrap", flexShrink: 0 }}>
-        {market.map((d) => (
-          <span key={d} style={{
-            fontSize: T.xs, padding: "3px 9px",
-            background: NEONLT, border: `1px solid ${NEONBRD}`,
-            borderRadius: "99px", color: NEON, fontWeight: 700,
-          }}>
-            {d}
-          </span>
-        ))}
-      </div>
     </div>
   );
 }
