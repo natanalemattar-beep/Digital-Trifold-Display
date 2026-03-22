@@ -606,34 +606,45 @@ export function Triptych() {
           </div>
         </div>
 
-        <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
-          {/* Download */}
-          <button
-            onClick={() => downloadTriptychHtml()}
-            style={{
-              display: "flex", alignItems: "center", gap: "6px",
-              padding: "7px clamp(10px,1.2vw,16px)",
-              borderRadius: "8px",
-              border: `1px solid rgba(56,189,248,0.3)`,
-              cursor: "pointer",
-              fontSize: "clamp(10px,0.9vw,12px)", fontWeight: 600,
-              fontFamily: "inherit",
-              background: "rgba(56,189,248,0.07)",
-              color: LBLUE,
-              transition: "background 0.2s, border-color 0.2s",
-            }}
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.background = "rgba(56,189,248,0.14)";
-              (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(56,189,248,0.5)";
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.background = "rgba(56,189,248,0.07)";
-              (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(56,189,248,0.3)";
-            }}
-          >
-            <Download size={13} strokeWidth={2} />
-            Descargar HTML
-          </button>
+        <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
+          {/* Download buttons */}
+          {(["front", "back"] as const).map((f) => {
+            const isGreen = f === "front";
+            const clr = isGreen ? NEON : LBLUE;
+            const bg = isGreen ? "rgba(0,255,65,0.08)" : "rgba(56,189,248,0.07)";
+            const bgHover = isGreen ? "rgba(0,255,65,0.16)" : "rgba(56,189,248,0.14)";
+            const brd = isGreen ? "rgba(0,255,65,0.3)" : "rgba(56,189,248,0.3)";
+            const brdHover = isGreen ? "rgba(0,255,65,0.55)" : "rgba(56,189,248,0.55)";
+            const label = f === "front" ? "Frontal" : "Trasera";
+            return (
+              <button
+                key={f}
+                onClick={() => downloadTriptychHtml(f)}
+                style={{
+                  display: "flex", alignItems: "center", gap: "5px",
+                  padding: "7px clamp(9px,1.1vw,14px)",
+                  borderRadius: "8px",
+                  border: `1px solid ${brd}`,
+                  cursor: "pointer",
+                  fontSize: "clamp(10px,0.88vw,12px)", fontWeight: 600,
+                  fontFamily: "inherit",
+                  background: bg, color: clr,
+                  transition: "background 0.2s, border-color 0.2s",
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.background = bgHover;
+                  (e.currentTarget as HTMLButtonElement).style.borderColor = brdHover;
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.background = bg;
+                  (e.currentTarget as HTMLButtonElement).style.borderColor = brd;
+                }}
+              >
+                <Download size={12} strokeWidth={2} />
+                {label}
+              </button>
+            );
+          })}
 
           {/* Face toggle */}
           <div style={{

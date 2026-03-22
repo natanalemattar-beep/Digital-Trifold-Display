@@ -271,149 +271,88 @@ function buildPanel6(): string {
     </div>`;
 }
 
-// ── Main export ──────────────────────────────────────────
-export async function downloadTriptychHtml() {
-  let logoDataUrl = "";
-  try {
-    const resp = await fetch("/logo-kyron.png");
-    const blob = await resp.blob();
-    logoDataUrl = await new Promise<string>((res) => {
-      const reader = new FileReader();
-      reader.onloadend = () => res(reader.result as string);
-      reader.readAsDataURL(blob);
-    });
-  } catch { /* no logo */ }
+// ── Shared CSS for the downloaded file ──────────────────
+const BASE_CSS = `
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html,body{width:100%;height:100%;-webkit-font-smoothing:antialiased}
+  body{
+    font-family:'Inter','Poppins',system-ui,sans-serif;
+    background:radial-gradient(ellipse at 15% 15%,#0d3494 0%,#0A2472 45%,#040c1e 100%);
+    color:#fff;
+  }
+  .panels{
+    display:flex;
+    gap:clamp(8px,1vw,14px);
+    width:100%;height:100%;
+    padding:clamp(12px,1.5vw,20px);
+  }
+  @media print{
+    *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+  }
+`;
 
-  const p1 = buildPanel1(logoDataUrl);
-  const p2 = buildPanel2();
-  const p3 = buildPanel3();
-  const p4 = buildPanel4();
-  const p5 = buildPanel5();
-  const p6 = buildPanel6();
+// ── Internal generator ───────────────────────────────────
+function buildHtml(face: "front" | "back", logoDataUrl: string): string {
+  const isFront = face === "front";
+  const title = isFront
+    ? "System Kyron – Cara Frontal"
+    : "System Kyron – Cara Trasera";
 
-  const headerLogo = logoDataUrl
-    ? `<img src="${logoDataUrl}" alt="System Kyron" style="width:clamp(34px,3.6vw,48px);height:clamp(34px,3.6vw,48px);object-fit:contain;filter:drop-shadow(0 0 10px rgba(0,255,65,.5))"/>`
-    : "";
+  const panels = isFront
+    ? `${buildPanel1(logoDataUrl)}${buildPanel2()}${buildPanel3()}`
+    : `${buildPanel4()}${buildPanel5()}${buildPanel6()}`;
 
-  const html = `<!DOCTYPE html>
+  return `<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-  <title>System Kyron – Tríptico Digital</title>
+  <title>${title}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Poppins:wght@600;700;900&display=swap" rel="stylesheet">
-  <style>
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    html,body{width:100%;min-height:100%;-webkit-font-smoothing:antialiased}
-    body{font-family:'Inter','Poppins',system-ui,sans-serif;background:radial-gradient(ellipse at 15% 15%,#0d3494 0%,#0A2472 45%,#040c1e 100%);color:#fff}
-    .screen-only{display:flex}
-    .face-section{width:100%;padding:clamp(8px,1vw,16px) clamp(12px,1.5vw,24px);display:flex;flex-direction:column;gap:clamp(8px,1vw,14px)}
-    .face-panels{display:flex;gap:clamp(8px,1vw,14px);min-height:420px}
-    .face-label{display:inline-flex;align-self:flex-start;align-items:center;gap:8px;padding:6px 14px;background:rgba(255,255,255,.04);border:1px solid rgba(56,189,248,.15);border-radius:12px;font-size:clamp(10px,.88vw,12px);font-weight:600;color:rgba(255,255,255,.8)}
-    .divider{height:2px;background:linear-gradient(90deg,transparent,rgba(56,189,248,.25) 20%,rgba(0,255,65,.25) 50%,rgba(56,189,248,.25) 80%,transparent);margin:0 clamp(12px,1.5vw,24px)}
-    .header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;padding:clamp(12px,1.5vw,20px) clamp(12px,1.5vw,24px)}
-    .brand{display:flex;align-items:center;gap:clamp(8px,1vw,14px)}
-    .actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-    button{font-family:inherit;cursor:pointer}
-    .print-btn{display:flex;align-items:center;gap:6px;padding:7px clamp(10px,1.2vw,16px);border-radius:8px;border:1px solid rgba(0,255,65,.3);background:rgba(0,255,65,.08);color:#00FF41;font-size:clamp(10px,.9vw,12px);font-weight:600;transition:background .2s}
-    .print-btn:hover{background:rgba(0,255,65,.16)}
-    .toggle{display:flex;background:rgba(255,255,255,.04);border:1px solid rgba(56,189,248,.2);border-radius:10px;padding:3px;gap:3px}
-    .toggle button{padding:6px clamp(10px,1.3vw,18px);border-radius:7px;border:none;font-size:clamp(10px,.9vw,12px);font-weight:700;transition:all .22s;background:transparent;color:rgba(255,255,255,.5)}
-    .toggle button.active-front{background:#065F46;color:#00FF41;box-shadow:0 0 14px rgba(0,255,65,.3)}
-    .toggle button.active-back{background:#0A2472;color:#38BDF8;box-shadow:0 0 14px rgba(56,189,248,.3)}
-    #face-back{display:none}
-
-    @media print{
-      *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
-      body{background:#0A2472!important}
-      .screen-only,.actions,.divider-print-hide{display:none!important}
-      .face-section{page-break-after:always;padding:12px 16px}
-      .face-panels{min-height:370px}
-      #face-back{display:flex!important}
-      .face-label{display:inline-flex!important}
-    }
-  </style>
+  <style>${BASE_CSS}</style>
 </head>
 <body>
-  <!-- HEADER (screen only) -->
-  <div class="header screen-only">
-    <div class="brand">
-      ${headerLogo}
-      <div>
-        <div style="font-size:clamp(17px,2.1vw,30px);font-weight:900;color:#fff;letter-spacing:-.02em">
-          System <span style="color:#00FF41;text-shadow:0 0 22px #00FF41">Kyron</span>
-        </div>
-        <div style="font-size:clamp(9px,.82vw,11px);color:rgba(255,255,255,.4);margin-top:1px">Tríptico Digital · Demo Day Kurios × EY 2026</div>
-      </div>
-    </div>
-    <div class="actions">
-      <button class="print-btn" onclick="window.print()">
-        ${icon(ICONS.printer, 13, "#00FF41")} Imprimir / Guardar PDF
-      </button>
-      <div class="toggle">
-        <button id="btn-front" class="active-front" onclick="showFace('front')">Cara Frontal</button>
-        <button id="btn-back" onclick="showFace('back')">Cara Trasera</button>
-      </div>
-    </div>
+  <div class="panels">
+    ${panels}
   </div>
-
-  <!-- FACE 1: FRONTAL -->
-  <div class="face-section" id="face-front">
-    <div class="face-label">
-      ${icon(ICONS.chevron, 13, "#38BDF8")}
-      Cara Frontal: Portada · El Problema · La Solución
-    </div>
-    <div class="face-panels">
-      ${p1}${p2}${p3}
-    </div>
-  </div>
-
-  <!-- VISUAL DIVIDER (screen only) -->
-  <div class="divider screen-only" style="display:none" id="divider"></div>
-
-  <!-- FACE 2: TRASERA -->
-  <div class="face-section" id="face-back">
-    <div class="face-label">
-      ${icon(ICONS.chevron, 13, "#38BDF8")}
-      Cara Trasera: Kyron Shield · Aliados + Roadmap · Equipo + Contacto
-    </div>
-    <div class="face-panels">
-      ${p4}${p5}${p6}
-    </div>
-  </div>
-
-<script>
-  function showFace(face) {
-    var front = document.getElementById('face-front');
-    var back  = document.getElementById('face-back');
-    var divider = document.getElementById('divider');
-    var btnF = document.getElementById('btn-front');
-    var btnB = document.getElementById('btn-back');
-    if (face === 'front') {
-      front.style.display = 'flex'; front.style.flexDirection = 'column';
-      back.style.display  = 'none';
-      divider.style.display = 'none';
-      btnF.className = 'active-front'; btnB.className = '';
-    } else {
-      front.style.display = 'none';
-      back.style.display  = 'flex'; back.style.flexDirection = 'column';
-      divider.style.display = 'none';
-      btnF.className = ''; btnB.className = 'active-back';
-    }
-  }
-</script>
 </body>
 </html>`;
+}
 
+// ── Main export ──────────────────────────────────────────
+async function fetchLogo(): Promise<string> {
+  try {
+    const resp = await fetch("/logo-kyron.png");
+    const blob = await resp.blob();
+    return new Promise<string>((res) => {
+      const reader = new FileReader();
+      reader.onloadend = () => res(reader.result as string);
+      reader.readAsDataURL(blob);
+    });
+  } catch {
+    return "";
+  }
+}
+
+function triggerDownload(html: string, filename: string) {
   const blob = new Blob([html], { type: "text/html;charset=utf-8" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = "system-kyron-triptico.html";
+  a.download = filename;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
+}
+
+export async function downloadTriptychHtml(face: "front" | "back") {
+  const logoDataUrl = await fetchLogo();
+  const html = buildHtml(face, logoDataUrl);
+  const filename = face === "front"
+    ? "system-kyron-cara-frontal.html"
+    : "system-kyron-cara-trasera.html";
+  triggerDownload(html, filename);
 }
