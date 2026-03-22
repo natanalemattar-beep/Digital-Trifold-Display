@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { downloadTriptychHtml } from "@/lib/generateHtml";
+import { useState, useRef, useCallback } from "react";
+import html2canvas from "html2canvas";
 import {
   Shield, Smartphone, Receipt, Scale,
   User, Radio, ClipboardList, Users, Handshake, Recycle, Server,
@@ -568,6 +568,45 @@ function Panel6() {
 // ── Main Page ────────────────────────────────────────────
 export function Triptych() {
   const [face, setFace] = useState<"front" | "back">("front");
+  const [isDownloading, setIsDownloading] = useState(false);
+  const panelsRef = useRef<HTMLDivElement>(null);
+
+  const downloadPng = useCallback(async (targetFace: "front" | "back") => {
+    if (!panelsRef.current || isDownloading) return;
+    setIsDownloading(true);
+
+    const prevFace = face;
+    let switched = false;
+
+    try {
+      if (face !== targetFace) {
+        setFace(targetFace);
+        switched = true;
+        await new Promise(r => setTimeout(r, 350));
+      }
+
+      const canvas = await html2canvas(panelsRef.current, {
+        backgroundColor: "#040c1e",
+        scale: 2,
+        useCORS: true,
+        allowTaint: true,
+        logging: false,
+      });
+
+      const url = canvas.toDataURL("image/png");
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = targetFace === "front"
+        ? "system-kyron-cara-frontal.png"
+        : "system-kyron-cara-trasera.png";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    } finally {
+      if (switched) setFace(prevFace);
+      setIsDownloading(false);
+    }
+  }, [face, isDownloading]);
 
   return (
     <div style={{
@@ -607,41 +646,56 @@ export function Triptych() {
         </div>
 
         <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
-          {/* Download buttons */}
+          {/* Download PNG buttons */}
           {(["front", "back"] as const).map((f) => {
             const isGreen = f === "front";
             const clr = isGreen ? NEON : LBLUE;
             const bg = isGreen ? "rgba(0,255,65,0.08)" : "rgba(56,189,248,0.07)";
             const bgHover = isGreen ? "rgba(0,255,65,0.16)" : "rgba(56,189,248,0.14)";
+            const bgActive = "rgba(255,255,255,0.06)";
             const brd = isGreen ? "rgba(0,255,65,0.3)" : "rgba(56,189,248,0.3)";
             const brdHover = isGreen ? "rgba(0,255,65,0.55)" : "rgba(56,189,248,0.55)";
             const label = f === "front" ? "Frontal" : "Trasera";
             return (
               <button
                 key={f}
-                onClick={() => downloadTriptychHtml(f)}
+                onClick={() => downloadPng(f)}
+                disabled={isDownloading}
+                title={`Descargar cara ${label} como PNG`}
                 style={{
                   display: "flex", alignItems: "center", gap: "5px",
                   padding: "7px clamp(9px,1.1vw,14px)",
                   borderRadius: "8px",
-                  border: `1px solid ${brd}`,
-                  cursor: "pointer",
+                  border: `1px solid ${isDownloading ? "rgba(255,255,255,0.12)" : brd}`,
+                  cursor: isDownloading ? "not-allowed" : "pointer",
                   fontSize: "clamp(10px,0.88vw,12px)", fontWeight: 600,
                   fontFamily: "inherit",
-                  background: bg, color: clr,
-                  transition: "background 0.2s, border-color 0.2s",
+                  background: isDownloading ? bgActive : bg,
+                  color: isDownloading ? "rgba(255,255,255,0.3)" : clr,
+                  transition: "background 0.2s, border-color 0.2s, color 0.2s",
+                  opacity: isDownloading ? 0.6 : 1,
                 }}
                 onMouseEnter={(e) => {
+                  if (isDownloading) return;
                   (e.currentTarget as HTMLButtonElement).style.background = bgHover;
                   (e.currentTarget as HTMLButtonElement).style.borderColor = brdHover;
                 }}
                 onMouseLeave={(e) => {
+                  if (isDownloading) return;
                   (e.currentTarget as HTMLButtonElement).style.background = bg;
                   (e.currentTarget as HTMLButtonElement).style.borderColor = brd;
                 }}
               >
                 <Download size={12} strokeWidth={2} />
-                {label}
+                {isDownloading ? "..." : label}
+                <span style={{
+                  fontSize: "9px", fontWeight: 700, padding: "1px 5px",
+                  borderRadius: "4px",
+                  background: isDownloading ? "rgba(255,255,255,0.06)" : `${clr}18`,
+                  border: `1px solid ${isDownloading ? "rgba(255,255,255,0.1)" : `${clr}30`}`,
+                  color: isDownloading ? "rgba(255,255,255,0.3)" : clr,
+                  letterSpacing: "0.04em",
+                }}>PNG</span>
               </button>
             );
           })}
@@ -697,7 +751,7 @@ export function Triptych() {
       </div>
 
       {/* ── Panels ── */}
-      <div style={{ display: "flex", gap: "clamp(8px,1vw,14px)", flex: 1, minHeight: 0 }}>
+      <div ref={panelsRef} style={{ display: "flex", gap: "clamp(8px,1vw,14px)", flex: 1, minHeight: 0 }}>
         {face === "front" ? (
           <>
             <Panel1 />
