@@ -1,0 +1,76 @@
+Necesito una página web que muestre un tríptico digital interactivo para el proyecto "System Kyron". Debe tener un diseño moderno, responsivo, con glassmorphism y los colores corporativos: fondo azul oscuro (#0A2472), acentos verde fosforescente (#00FF00). El tríptico debe mostrar dos caras: frontal y trasera. Cada cara tiene 3 paneles (6 paneles en total) con el siguiente contenido exacto.
+
+### PANEL 1 (Portada – frontal)
+- Título grande: "System Kyron"
+- Subtítulo: "La línea de teléfono que protege tu negocio"
+- Eslogan: "Todo homologado: desde el IMEI hasta la contabilidad"
+- Texto inferior: "Colegio Gabriela Mistral · Catia la Mar, La Guaira · Demo Day Kurios x EY 2026"
+- Icono o placeholder: un escudo o logo.
+
+### PANEL 2 (El problema)
+- Título: "El caos regulatorio venezolano"
+- Texto explicativo breve.
+- Cuatro tarjetas con números grandes verdes:
+  - "21M+" → "Líneas móviles activas expuestas a bloqueo (CONATEL)"
+  - "1.000x" → "Multas de hasta 1.000 veces el BCV"
+  - "134h" → "Horas perdidas al año en papeleo (OCDE)"
+  - "61%" → "PyMEs con incumplimiento laboral"
+- Iconos: móvil, factura, martillo, gráfico.
+
+### PANEL 3 (Solución: 9 módulos)
+- Título: "System Kyron – Ecosistema integral"
+- Texto: "La primera línea telefónica que homologa tu negocio desde el chip hasta la contabilidad."
+- Grid 3x3 con los módulos:
+  1. Cuenta Personal
+  2. Mi Línea 5G
+  3. Contabilidad + permisos (CONATEL, parafiscales, ministeriales)
+  4. Asesoría Legal
+  5. Facturación TPV
+  6. RRHH
+  7. Socios
+  8. Sostenibilidad
+  9. Ingeniería IT
+- Destacados: "✅ 100% homologado · ✅ Soporte 24/7 · 🌐 Multi‑lenguaje (ES/EN)"
+
+### PANEL 4 (Kyron Shield + Sostenibilidad)
+- Título: "KYRON SHIELD – La única SIM con 3 seguros"
+- Viñetas:
+  - Reposición de equipo por robo o daño
+  - Perito forense SENIAT en fiscalizaciones
+  - Abogado en menos de 1 hora
+- Frase: "Otros venden minutos. Nosotros proponemos vender cumplimiento."
+- Título secundario: "Sostenibilidad inteligente"
+- Texto: Smart Bins con tecnología de inducción magnética (alianza Ameru.AI). Eco‑Créditos: puntos que acumulas por reciclar, con badge "EN DESARROLLO".
+- Placeholder para imagen de Smart Bin.
+
+### PANEL 5 (Aliados + Roadmap)
+- Título: "Aliados estratégicos"
+- Logos (como badges) con nombres: SAMSUNG, XIAOMI, MOTOROLA, APPLE, HKA FACTORY, AMERU.AI. Cada uno con badge "EN DESARROLLO".
+- Hoja de ruta:
+  - 2026: Validación Caracas/La Guaira · Plataforma bilingüe (ES/EN)
+  - 2027: Expansión Colombia/Panamá
+  - 2028+: Evaluación México/EE.UU.
+- Datos de mercado: "500K PyMEs en Venezuela · 8.5M en Latam · 21M+ consumidores"
+
+### PANEL 6 (Equipo + Contacto + CTA)
+- Título: "Hecho en Catia la Mar, para el mundo"
+- Tres miembros del equipo con placeholders de foto y nombres:
+  - Carlos Mattar – Co-CEO & Lead Architecture
+  - Sebastián Garrido – Co-CEO & Network Slicing
+  - Marcos Sousa – Co-CEO & Operational Flow
+- Frase: "Crecimos donde los apagones borran datos y la humedad destruye papeles. Por eso creamos esta propuesta."
+- Call to Action: "¿Quieres ser parte del pilotaje 2026?"
+- Contacto (placeholders): correo, teléfono, web.
+- Código QR (placeholder visual).
+- Pie de página: "System Kyron · Propuesta en desarrollo · Colegio Gabriela Mistral · Kurios x EY Demo Day 2026"
+
+### REQUERIMIENTOS TÉCNICOS
+- Usar HTML, CSS (flex/grid), y si se desea, FontAwesome para iconos.
+- Diseño responsivo (se adapte a móvil).
+- Dos caras: frontal y trasera. Cada cara debe tener 3 paneles visibles en fila (en desktop) y colapsar en móvil.
+- Estilo glassmorphism en los paneles (fondo semitransparente, blur, bordes redondeados).
+- Tipografía 'Inter' o 'Poppins'.
+- No se requieren imágenes reales; usar placeholders visuales (círculos, cuadros punteados, iconos).
+- El código debe ser autónomo (un solo archivo HTML/CSS/JS) y funcionar al abrirlo.
+
+Genera el código completo.
