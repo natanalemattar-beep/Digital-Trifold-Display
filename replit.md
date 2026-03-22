@@ -16,6 +16,12 @@ pnpm workspace monorepo using TypeScript. Each package manages its own dependenc
 - **API codegen**: Orval (from OpenAPI spec)
 - **Build**: esbuild (CJS bundle)
 
+## Artifacts
+
+- **`artifacts/system-kyron`** — System Kyron Tríptico Digital Interactivo (React + Vite, deployed at `/`). A fully interactive digital triptych with glassmorphism design, two faces (Frontal / Trasera), 6 panels covering: cover/branding, regulatory stats, 9-module ecosystem, Kyron Shield insurance, strategic allies & roadmap, and team/contact.
+- **`artifacts/api-server`** — Express API server at `/api`
+- **`artifacts/mockup-sandbox`** — UI prototyping sandbox at `/__mockup`
+
 ## Structure
 
 ```text
