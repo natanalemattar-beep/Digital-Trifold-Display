@@ -1,6 +1,6 @@
 kind = "web"
 previewPath = "/"
-title = "System Kyron"
+title = "System Kyron – Tríptico Digital"
 version = "1.0.0"
 id = "artifacts/system-kyron"
 router = "path"

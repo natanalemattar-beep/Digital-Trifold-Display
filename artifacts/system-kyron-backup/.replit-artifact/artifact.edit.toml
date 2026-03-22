@@ -1,0 +1,26 @@
+kind = "web"
+previewPath = "/"
+title = "System Kyron"
+version = "1.0.0"
+id = "system-kyron-artifact"
+
+[[services]]
+localPort = 22622
+name = "web"
+paths = ["/"]
+
+[services.env]
+PORT = "22622"
+BASE_PATH = "/"
+
+[services.development]
+run = "pnpm --filter @workspace/system-kyron run dev"
+
+[services.production]
+serve = "static"
+
+[services.production.build]
+args = ["pnpm", "--filter", "@workspace/system-kyron", "run", "build"]
+
+[services.production.build.env]
+NODE_ENV = "production"
