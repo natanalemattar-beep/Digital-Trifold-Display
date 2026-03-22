@@ -1,11 +1,14 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
+import pptxgen from "pptxgenjs";
 import {
   Shield, Smartphone, Receipt, Scale,
   User, Radio, ClipboardList, Users, Handshake, Recycle, Server,
   Building2, Globe, Mail, Phone, Download, MapPin,
   Trash2, CheckCircle2, Clock, AlertTriangle, BarChart3,
   ChevronRight, Leaf, FileSearch, Zap, ArrowRight, Sparkles,
+  FileText, Presentation, FileDown, Image, Palette, X, ChevronDown,
 } from "lucide-react";
 
 // ── Design Tokens ──────────────────────────────────────────────────────────
@@ -663,37 +666,112 @@ function Panel6() {
   );
 }
 
+// ── Export formats config ──────────────────────────────────────────────────
+type ExportFormat = "png" | "pdf" | "pptx" | "word" | "canva";
+
+const FORMATS: { id: ExportFormat; label: string; ext: string; icon: React.ElementType; desc: string; color: string }[] = [
+  { id: "pdf",   label: "PDF",         ext: ".pdf",  icon: FileText,     desc: "Alta resolución, imprimible", color: "#EF4444" },
+  { id: "pptx",  label: "PowerPoint",  ext: ".pptx", icon: Presentation, desc: "Diapositiva lista para presentar", color: "#EA580C" },
+  { id: "word",  label: "Word",        ext: ".docx", icon: FileDown,     desc: "Documento editable con imagen", color: "#2563EB" },
+  { id: "png",   label: "PNG",         ext: ".png",  icon: Image,        desc: "Imagen para web · 2×", color: NEON },
+  { id: "canva", label: "Para Canva",  ext: ".png",  icon: Palette,      desc: "PNG 3× optimizado para Canva", color: "#7C3AED" },
+];
+
 // ── Main Page ──────────────────────────────────────────────────────────────
 export function Triptych() {
   const [face, setFace] = useState<"front" | "back">("front");
-  const [isDownloading, setIsDownloading] = useState(false);
+  const [dlOpen, setDlOpen] = useState(false);
+  const [dlFace, setDlFace] = useState<"front" | "back">("front");
+  const [isDownloading, setIsDownloading] = useState<ExportFormat | null>(null);
   const panelsRef = useRef<HTMLDivElement>(null);
+  const dlRef    = useRef<HTMLDivElement>(null);
 
-  const downloadPng = useCallback(async (targetFace: "front" | "back") => {
-    if (!panelsRef.current || isDownloading) return;
-    setIsDownloading(true);
+  useEffect(() => {
+    function onClickOutside(e: MouseEvent) {
+      if (dlRef.current && !dlRef.current.contains(e.target as Node)) setDlOpen(false);
+    }
+    document.addEventListener("mousedown", onClickOutside);
+    return () => document.removeEventListener("mousedown", onClickOutside);
+  }, []);
+
+  const captureCanvas = useCallback(async (targetFace: "front" | "back", scale = 2) => {
+    if (!panelsRef.current) return null;
     const prevFace = face;
     let switched = false;
+    if (face !== targetFace) {
+      setFace(targetFace);
+      switched = true;
+      await new Promise(r => setTimeout(r, 380));
+    }
     try {
-      if (face !== targetFace) {
-        setFace(targetFace);
-        switched = true;
-        await new Promise(r => setTimeout(r, 350));
-      }
-      const canvas = await html2canvas(panelsRef.current, {
+      const c = await html2canvas(panelsRef.current, {
         backgroundColor: "#040c1e",
-        scale: 2, useCORS: true, allowTaint: true, logging: false,
+        scale, useCORS: true, allowTaint: true, logging: false,
       });
-      const url = canvas.toDataURL("image/png");
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = targetFace === "front" ? "system-kyron-cara-frontal.png" : "system-kyron-cara-trasera.png";
-      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      return c;
     } finally {
       if (switched) setFace(prevFace);
-      setIsDownloading(false);
     }
-  }, [face, isDownloading]);
+  }, [face]);
+
+  const triggerDownload = (dataUrl: string, filename: string) => {
+    const a = document.createElement("a");
+    a.href = dataUrl; a.download = filename;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  };
+
+  const downloadAs = useCallback(async (format: ExportFormat) => {
+    if (isDownloading) return;
+    setIsDownloading(format);
+    const slug = dlFace === "front" ? "cara-frontal" : "cara-trasera";
+    try {
+      if (format === "png") {
+        const c = await captureCanvas(dlFace, 2);
+        if (!c) return;
+        triggerDownload(c.toDataURL("image/png"), `system-kyron-${slug}.png`);
+      }
+      if (format === "canva") {
+        const c = await captureCanvas(dlFace, 3);
+        if (!c) return;
+        triggerDownload(c.toDataURL("image/png"), `system-kyron-${slug}-canva.png`);
+      }
+      if (format === "pdf") {
+        const c = await captureCanvas(dlFace, 2);
+        if (!c) return;
+        const imgData = c.toDataURL("image/png");
+        const pdf = new jsPDF({ orientation: "landscape", unit: "px", format: [c.width / 2, c.height / 2] });
+        pdf.addImage(imgData, "PNG", 0, 0, c.width / 2, c.height / 2);
+        pdf.save(`system-kyron-${slug}.pdf`);
+      }
+      if (format === "pptx") {
+        const c = await captureCanvas(dlFace, 2);
+        if (!c) return;
+        const imgData = c.toDataURL("image/png");
+        const prs = new pptxgen();
+        prs.layout = "LAYOUT_WIDE";
+        const slide = prs.addSlide();
+        slide.background = { color: "040c1e" };
+        slide.addImage({ data: imgData, x: 0, y: 0, w: "100%", h: "100%" });
+        await prs.writeFile({ fileName: `system-kyron-${slug}.pptx` });
+      }
+      if (format === "word") {
+        const c = await captureCanvas(dlFace, 2);
+        if (!c) return;
+        const imgData = c.toDataURL("image/png");
+        const html = `<html xmlns:o="urn:schemas-microsoft-com:office:office"
+          xmlns:w="urn:schemas-microsoft-com:office:word"
+          xmlns="http://www.w3.org/TR/REC-html40">
+          <head><meta charset="utf-8"><title>System Kyron – ${slug}</title>
+          <style>body{margin:0;padding:0;background:#040c1e;}img{width:100%;display:block;}</style></head>
+          <body><img src="${imgData}" alt="System Kyron ${slug}" /></body></html>`;
+        const blob = new Blob([html], { type: "application/msword" });
+        triggerDownload(URL.createObjectURL(blob), `system-kyron-${slug}.doc`);
+      }
+    } finally {
+      setIsDownloading(null);
+      setDlOpen(false);
+    }
+  }, [isDownloading, dlFace, captureCanvas]);
 
   return (
     <div style={{
@@ -720,10 +798,7 @@ export function Triptych() {
             filter: `drop-shadow(0 0 10px rgba(0,214,51,0.55))`,
           }} />
           <div>
-            <div style={{
-              fontSize: T["2xl"], fontWeight: 900,
-              color: "#fff", letterSpacing: "-0.025em", lineHeight: 1,
-            }}>
+            <div style={{ fontSize: T["2xl"], fontWeight: 900, color: "#fff", letterSpacing: "-0.025em", lineHeight: 1 }}>
               System <span style={{ color: NEON, textShadow: `0 0 22px ${NEON}` }}>Kyron</span>
             </div>
             <div style={{ fontSize: T.xs, color: WHITE30, marginTop: "2px", letterSpacing: "0.02em" }}>
@@ -734,45 +809,161 @@ export function Triptych() {
 
         {/* Controls */}
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          {/* Download buttons */}
-          {(["front", "back"] as const).map((f) => {
-            const isG = f === "front";
-            const clr = isG ? NEON : LBLUE;
-            const bg  = isG ? NEONLT : LBLUELT;
-            const brd = isG ? NEONBRD : LBLUEBRD;
-            return (
-              <button key={f} onClick={() => downloadPng(f)} disabled={isDownloading}
-                style={{
-                  display: "flex", alignItems: "center", gap: "5px",
-                  padding: "6px clamp(8px,1vw,13px)",
-                  borderRadius: "8px", border: `1px solid ${isDownloading ? WHITE10 : brd}`,
-                  cursor: isDownloading ? "not-allowed" : "pointer",
-                  fontSize: T.sm, fontWeight: 600, fontFamily: "inherit",
-                  background: isDownloading ? "rgba(255,255,255,0.03)" : bg,
-                  color: isDownloading ? WHITE30 : clr,
-                  transition: "all 0.18s", opacity: isDownloading ? 0.5 : 1,
-                }}
-                onMouseEnter={(e) => {
-                  if (isDownloading) return;
-                  (e.currentTarget as HTMLButtonElement).style.background = isG ? "rgba(0,214,51,0.18)" : "rgba(56,189,248,0.15)";
-                  (e.currentTarget as HTMLButtonElement).style.borderColor = isG ? "rgba(0,214,51,0.5)" : "rgba(56,189,248,0.5)";
-                }}
-                onMouseLeave={(e) => {
-                  if (isDownloading) return;
-                  (e.currentTarget as HTMLButtonElement).style.background = bg;
-                  (e.currentTarget as HTMLButtonElement).style.borderColor = brd;
-                }}
-              >
-                <Download size={11} strokeWidth={2} />
-                {isDownloading ? "..." : (f === "front" ? "Frontal" : "Trasera")}
-                <span style={{
-                  fontSize: "8px", fontWeight: 800, padding: "1px 4px",
-                  borderRadius: "3px", background: `${clr}18`,
-                  border: `1px solid ${clr}30`, color: clr,
-                }}>PNG</span>
-              </button>
-            );
-          })}
+
+          {/* ── Download trigger ── */}
+          <div ref={dlRef} style={{ position: "relative" }}>
+            <button onClick={() => setDlOpen(v => !v)} style={{
+              display: "flex", alignItems: "center", gap: "6px",
+              padding: "7px 14px",
+              borderRadius: "9px", fontFamily: "inherit",
+              border: `1px solid ${NEONBRD}`,
+              background: NEONLT,
+              color: NEON, cursor: "pointer",
+              fontSize: T.sm, fontWeight: 700,
+              transition: "all 0.18s",
+            }}
+              onMouseEnter={(e) => ((e.currentTarget as HTMLButtonElement).style.background = "rgba(0,214,51,0.2)")}
+              onMouseLeave={(e) => ((e.currentTarget as HTMLButtonElement).style.background = NEONLT)}
+            >
+              <Download size={12} strokeWidth={2.2} />
+              Exportar
+              <ChevronDown size={11} strokeWidth={2.5}
+                style={{ transform: dlOpen ? "rotate(180deg)" : "none", transition: "transform 0.2s" }} />
+            </button>
+
+            {/* ── Download panel ── */}
+            {dlOpen && (
+              <div style={{
+                position: "absolute", top: "calc(100% + 8px)", right: 0,
+                width: "310px", zIndex: 999,
+                background: "rgba(4,12,30,0.97)",
+                backdropFilter: "blur(24px)",
+                WebkitBackdropFilter: "blur(24px)",
+                border: "1px solid rgba(56,189,248,0.2)",
+                borderRadius: "14px",
+                padding: "14px",
+                boxShadow: "0 24px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(0,214,51,0.06)",
+                display: "flex", flexDirection: "column", gap: "10px",
+              }}>
+                {/* Panel header */}
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <span style={{ fontSize: T.md, fontWeight: 800, color: "#fff", letterSpacing: "-0.01em" }}>
+                    Descargar tríptico
+                  </span>
+                  <button onClick={() => setDlOpen(false)} style={{
+                    background: "none", border: "none", cursor: "pointer",
+                    color: WHITE30, padding: "2px", display: "flex", alignItems: "center",
+                  }}>
+                    <X size={14} strokeWidth={2} />
+                  </button>
+                </div>
+
+                {/* Face selector */}
+                <div>
+                  <div style={{ fontSize: T.xs, color: WHITE30, fontWeight: 600, letterSpacing: "0.06em", marginBottom: "6px" }}>
+                    CARA
+                  </div>
+                  <div style={{
+                    display: "flex", gap: "5px",
+                    background: "rgba(255,255,255,0.04)",
+                    border: "1px solid rgba(56,189,248,0.13)",
+                    borderRadius: "9px", padding: "3px",
+                  }}>
+                    {(["front", "back"] as const).map((f) => (
+                      <button key={f} onClick={() => setDlFace(f)} style={{
+                        flex: 1, padding: "5px 8px",
+                        borderRadius: "6px", border: "none", cursor: "pointer",
+                        fontSize: T.xs, fontWeight: 700, fontFamily: "inherit",
+                        transition: "all 0.18s",
+                        background: dlFace === f
+                          ? (f === "front" ? "rgba(0,214,51,0.18)" : "rgba(56,189,248,0.15)")
+                          : "transparent",
+                        color: dlFace === f ? (f === "front" ? NEON : LBLUE) : WHITE30,
+                      }}>
+                        {f === "front" ? "Cara Frontal" : "Cara Trasera"}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Divider */}
+                <div style={{ height: "1px", background: "rgba(255,255,255,0.07)" }} />
+
+                {/* Format list */}
+                <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+                  <div style={{ fontSize: T.xs, color: WHITE30, fontWeight: 600, letterSpacing: "0.06em", marginBottom: "2px" }}>
+                    FORMATO
+                  </div>
+                  {FORMATS.map(({ id, label, ext, icon: Icon, desc, color }) => {
+                    const loading = isDownloading === id;
+                    return (
+                      <button key={id} onClick={() => downloadAs(id)}
+                        disabled={isDownloading !== null}
+                        style={{
+                          display: "flex", alignItems: "center", gap: "10px",
+                          padding: "8px 10px",
+                          borderRadius: "9px", fontFamily: "inherit",
+                          border: `1px solid ${loading ? color + "44" : "rgba(255,255,255,0.07)"}`,
+                          background: loading ? `${color}10` : "rgba(255,255,255,0.03)",
+                          cursor: isDownloading !== null ? "wait" : "pointer",
+                          transition: "all 0.18s", textAlign: "left", width: "100%",
+                          opacity: isDownloading !== null && !loading ? 0.4 : 1,
+                        }}
+                        onMouseEnter={(e) => {
+                          if (isDownloading !== null) return;
+                          (e.currentTarget as HTMLButtonElement).style.background = `${color}12`;
+                          (e.currentTarget as HTMLButtonElement).style.borderColor = `${color}33`;
+                        }}
+                        onMouseLeave={(e) => {
+                          if (isDownloading !== null) return;
+                          (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.03)";
+                          (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(255,255,255,0.07)";
+                        }}
+                      >
+                        <div style={{
+                          width: "30px", height: "30px", borderRadius: "7px", flexShrink: 0,
+                          background: `${color}14`, border: `1px solid ${color}28`,
+                          display: "flex", alignItems: "center", justifyContent: "center",
+                        }}>
+                          <Icon size={14} color={color} strokeWidth={1.8} />
+                        </div>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                            <span style={{ fontSize: T.sm, fontWeight: 700, color: "#fff" }}>{label}</span>
+                            <span style={{
+                              fontSize: "9px", padding: "1px 5px", borderRadius: "3px",
+                              background: `${color}18`, border: `1px solid ${color}28`,
+                              color, fontWeight: 700, letterSpacing: "0.04em",
+                            }}>{ext}</span>
+                          </div>
+                          <div style={{ fontSize: T.xs, color: WHITE30, marginTop: "2px" }}>{desc}</div>
+                        </div>
+                        {loading ? (
+                          <div style={{
+                            width: "16px", height: "16px", borderRadius: "50%", flexShrink: 0,
+                            border: `2px solid ${color}33`, borderTopColor: color,
+                            animation: "spin 0.7s linear infinite",
+                          }} />
+                        ) : (
+                          <Download size={12} color={WHITE30} strokeWidth={2} style={{ flexShrink: 0 }} />
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Canva note */}
+                <div style={{
+                  background: "rgba(124,58,237,0.07)", border: "1px solid rgba(124,58,237,0.18)",
+                  borderRadius: "8px", padding: "7px 10px",
+                  fontSize: T.xs, color: WHITE30, lineHeight: 1.5,
+                }}>
+                  <span style={{ color: "#A78BFA", fontWeight: 700 }}>Para Canva:</span>
+                  {" "}Descarga el PNG 3× y súbelo a Canva vía Subidas → Agregar imagen.
+                </div>
+              </div>
+            )}
+          </div>
 
           {/* Face toggle */}
           <div style={{
@@ -801,6 +992,9 @@ export function Triptych() {
           </div>
         </div>
       </div>
+
+      {/* Spinner keyframes */}
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
 
       {/* ── Face label ── */}
       <div style={{
