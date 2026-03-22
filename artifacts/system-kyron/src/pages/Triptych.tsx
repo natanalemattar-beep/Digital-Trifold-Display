@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { downloadTriptychHtml } from "@/lib/generateHtml";
 import {
-  Shield, Smartphone, Receipt, Scale, TrendingUp, Monitor,
+  Shield, Smartphone, Receipt, Scale,
   User, Radio, ClipboardList, Users, Handshake, Recycle, Server,
-  Building2, Globe, Mail, Phone, Download, Search, MapPin,
+  Building2, Globe, Mail, Phone, Download, MapPin,
   Trash2, CheckCircle2, Clock, AlertTriangle, BarChart3,
   ChevronRight, Leaf, FileSearch, Zap, ArrowRight,
 } from "lucide-react";
