@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 
 // ── Palette ─────────────────────────────────────────────
-const NEON   = "#00FF41";   // phosphorescent green
+const NEON   = "#00D633";   // phosphorescent green (slightly darker)
 const LBLUE  = "#38BDF8";   // light blue
 const DGREEN = "#065F46";   // dark green
 const DBGD   = "#0A2472";   // dark blue (background)
@@ -22,10 +22,12 @@ const glassPanel: React.CSSProperties = {
   borderRadius: "20px",
   flex: 1,
   minWidth: 0,
+  minHeight: 0,
+  overflow: "hidden",
   display: "flex",
   flexDirection: "column",
-  padding: "clamp(16px,1.8vw,28px) clamp(14px,1.5vw,22px)",
-  gap: "clamp(10px,1.2vw,16px)",
+  padding: "clamp(12px,1.4vw,22px) clamp(12px,1.3vw,20px)",
+  gap: "clamp(8px,0.9vw,13px)",
 };
 
 const glassCard: React.CSSProperties = {
@@ -610,12 +612,13 @@ export function Triptych() {
 
   return (
     <div style={{
-      minHeight: "100vh",
+      height: "100vh",
+      overflow: "hidden",
       background: `radial-gradient(ellipse at 15% 15%, #0d3494 0%, ${DBGD} 45%, #040c1e 100%)`,
       fontFamily: "'Inter', 'Poppins', system-ui, sans-serif",
-      padding: "clamp(12px,1.5vw,24px)",
+      padding: "clamp(10px,1.2vw,20px)",
       display: "flex", flexDirection: "column",
-      gap: "clamp(10px,1.2vw,18px)",
+      gap: "clamp(8px,0.9vw,14px)",
       boxSizing: "border-box",
     }}>
 
