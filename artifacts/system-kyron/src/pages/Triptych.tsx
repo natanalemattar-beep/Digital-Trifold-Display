@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { downloadTriptychHtml } from "@/lib/generateHtml";
 
 const ACCENT = "#00FF00";
 const BG_DARK = "#0A2472";
@@ -670,6 +671,36 @@ export function Triptych() {
             </p>
           </div>
         </div>
+
+        {/* Download button */}
+        <button
+          onClick={() => downloadTriptychHtml()}
+          style={{
+            padding: "8px clamp(12px,1.5vw,20px)",
+            borderRadius: "8px",
+            border: `1px solid ${ACCENT}55`,
+            cursor: "pointer",
+            fontSize: "clamp(11px,1vw,13px)",
+            fontWeight: 700,
+            fontFamily: "inherit",
+            background: "rgba(0,255,0,0.08)",
+            color: ACCENT,
+            display: "flex",
+            alignItems: "center",
+            gap: "6px",
+            transition: "background 0.2s, box-shadow 0.2s",
+          }}
+          onMouseEnter={(e) => {
+            (e.currentTarget as HTMLButtonElement).style.background = "rgba(0,255,0,0.16)";
+            (e.currentTarget as HTMLButtonElement).style.boxShadow = `0 0 14px ${ACCENT}33`;
+          }}
+          onMouseLeave={(e) => {
+            (e.currentTarget as HTMLButtonElement).style.background = "rgba(0,255,0,0.08)";
+            (e.currentTarget as HTMLButtonElement).style.boxShadow = "none";
+          }}
+        >
+          ⬇️ Descargar HTML
+        </button>
 
         {/* Toggle */}
         <div
