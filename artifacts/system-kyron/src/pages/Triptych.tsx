@@ -5,149 +5,192 @@ import {
   User, Radio, ClipboardList, Users, Handshake, Recycle, Server,
   Building2, Globe, Mail, Phone, Download, MapPin,
   Trash2, CheckCircle2, Clock, AlertTriangle, BarChart3,
-  ChevronRight, Leaf, FileSearch, Zap, ArrowRight,
+  ChevronRight, Leaf, FileSearch, Zap, ArrowRight, Sparkles,
 } from "lucide-react";
 
-// ── Palette ─────────────────────────────────────────────
-const NEON   = "#00D633";   // phosphorescent green (slightly darker)
-const LBLUE  = "#38BDF8";   // light blue
-const DGREEN = "#065F46";   // dark green
-const DBGD   = "#0A2472";   // dark blue (background)
+// ── Design Tokens ──────────────────────────────────────────────────────────
+const NEON    = "#00D633";
+const NEONLT  = "rgba(0,214,51,0.12)";
+const NEONBRD = "rgba(0,214,51,0.22)";
+const LBLUE   = "#38BDF8";
+const LBLUELT = "rgba(56,189,248,0.09)";
+const LBLUEBRD= "rgba(56,189,248,0.22)";
+const AMBER   = "#FBBF24";
+const WHITE85 = "rgba(255,255,255,0.85)";
+const WHITE55 = "rgba(255,255,255,0.55)";
+const WHITE30 = "rgba(255,255,255,0.30)";
+const WHITE10 = "rgba(255,255,255,0.10)";
 
-const glassPanel: React.CSSProperties = {
-  background: "rgba(255,255,255,0.04)",
-  backdropFilter: "blur(20px)",
-  WebkitBackdropFilter: "blur(20px)",
-  border: "1px solid rgba(56,189,248,0.15)",
-  borderRadius: "20px",
+const T = {
+  xs:   "clamp(8px,0.72vw,10px)",
+  sm:   "clamp(9px,0.82vw,11px)",
+  base: "clamp(10px,0.9vw,12.5px)",
+  md:   "clamp(11px,1vw,14px)",
+  lg:   "clamp(13px,1.3vw,17px)",
+  xl:   "clamp(15px,1.6vw,21px)",
+  "2xl":"clamp(20px,2.2vw,30px)",
+  "3xl":"clamp(26px,3vw,42px)",
+};
+
+// ── Base Panel ─────────────────────────────────────────────────────────────
+const panel: React.CSSProperties = {
   flex: 1,
   minWidth: 0,
   minHeight: 0,
   overflow: "hidden",
   display: "flex",
   flexDirection: "column",
-  padding: "clamp(12px,1.4vw,22px) clamp(12px,1.3vw,20px)",
-  gap: "clamp(8px,0.9vw,13px)",
+  borderRadius: "18px",
+  padding: "clamp(14px,1.5vw,22px) clamp(12px,1.3vw,20px)",
+  gap: "clamp(9px,1vw,14px)",
+  background: "rgba(255,255,255,0.03)",
+  backdropFilter: "blur(24px)",
+  WebkitBackdropFilter: "blur(24px)",
+  border: "1px solid rgba(56,189,248,0.13)",
+  boxSizing: "border-box",
 };
 
-const glassCard: React.CSSProperties = {
-  background: "rgba(6,95,70,0.18)",
-  border: "1px solid rgba(0,255,65,0.2)",
-  borderRadius: "12px",
-  padding: "12px 14px",
-};
+// ── Shared Components ──────────────────────────────────────────────────────
 
-const glassBlue: React.CSSProperties = {
-  background: "rgba(56,189,248,0.07)",
-  border: "1px solid rgba(56,189,248,0.2)",
-  borderRadius: "12px",
-  padding: "12px 14px",
-};
+function Divider() {
+  return <div style={{ height: "1px", background: "rgba(56,189,248,0.1)", flexShrink: 0 }} />;
+}
 
-// ── Shared sub-components ────────────────────────────────
-
-function SectionTitle({ icon: Icon, children }: { icon: React.ElementType; children: React.ReactNode }) {
+function Tag({ children, color = NEON }: { children: React.ReactNode; color?: string }) {
+  const alpha = color === NEON ? NEONLT : LBLUELT;
+  const border = color === NEON ? NEONBRD : LBLUEBRD;
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-      <div style={{
-        width: "28px", height: "28px", borderRadius: "8px",
-        background: `rgba(0,255,65,0.12)`,
-        border: `1px solid rgba(0,255,65,0.25)`,
-        display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
-      }}>
-        <Icon size={14} color={NEON} strokeWidth={2} />
-      </div>
-      <h2 style={{
-        margin: 0, fontWeight: 800,
-        fontSize: "clamp(13px,1.45vw,19px)",
-        color: "#fff", lineHeight: 1.2,
-      }}>
-        {children}
-      </h2>
-    </div>
+    <span style={{
+      display: "inline-flex", alignItems: "center", gap: "3px",
+      fontSize: T.xs, fontWeight: 700, padding: "2px 8px",
+      borderRadius: "99px",
+      background: alpha, border: `1px solid ${border}`,
+      color, letterSpacing: "0.05em", textTransform: "uppercase",
+    }}>
+      {children}
+    </span>
   );
 }
 
 function DevBadge() {
   return (
     <span style={{
-      display: "inline-flex", alignItems: "center", gap: "4px",
-      fontSize: "9px", fontWeight: 700, padding: "2px 7px",
+      display: "inline-flex", alignItems: "center", gap: "3px",
+      fontSize: T.xs, fontWeight: 700, padding: "2px 8px",
       borderRadius: "99px",
-      background: "rgba(251,191,36,0.12)",
-      border: "1px solid rgba(251,191,36,0.35)",
-      color: "#FBBF24",
-      textTransform: "uppercase", letterSpacing: "0.06em",
+      background: "rgba(251,191,36,0.10)",
+      border: "1px solid rgba(251,191,36,0.28)",
+      color: AMBER, letterSpacing: "0.05em", textTransform: "uppercase",
     }}>
-      <Zap size={8} color="#FBBF24" strokeWidth={2.5} />
+      <Zap size={7} color={AMBER} strokeWidth={2.5} />
       En desarrollo
     </span>
   );
 }
 
-function GreenCheck({ label }: { label: string }) {
+function SectionHeader({ icon: Icon, title, accent, blue = false }: {
+  icon: React.ElementType; title: string; accent?: string; blue?: boolean;
+}) {
+  const c = blue ? LBLUE : NEON;
+  const bg = blue ? LBLUELT : NEONLT;
+  const brd = blue ? LBLUEBRD : NEONBRD;
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-      <CheckCircle2 size={13} color={NEON} strokeWidth={2.5} />
-      <span style={{ fontSize: "clamp(9px,0.85vw,11px)", color: "rgba(255,255,255,0.8)" }}>{label}</span>
+    <div style={{ display: "flex", alignItems: "center", gap: "9px", flexShrink: 0 }}>
+      <div style={{
+        width: "30px", height: "30px", borderRadius: "9px",
+        background: bg, border: `1px solid ${brd}`,
+        display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+      }}>
+        <Icon size={14} color={c} strokeWidth={2} />
+      </div>
+      <h2 style={{ margin: 0, fontWeight: 800, fontSize: T.lg, color: "#fff", lineHeight: 1.15, letterSpacing: "-0.01em" }}>
+        {title}{accent && <> <span style={{ color: NEON }}>{accent}</span></>}
+      </h2>
     </div>
   );
 }
 
-// ── Panel 1 – Portada ────────────────────────────────────
+// ── Panel 1 – Portada ──────────────────────────────────────────────────────
 function Panel1() {
   return (
     <div style={{
-      ...glassPanel,
+      ...panel,
       alignItems: "center",
       justifyContent: "center",
       textAlign: "center",
-      gap: "clamp(14px,1.6vw,24px)",
-      background: `linear-gradient(160deg, rgba(6,95,70,0.22) 0%, rgba(10,36,114,0.35) 100%)`,
-      border: `1px solid rgba(0,255,65,0.2)`,
+      background: "linear-gradient(155deg, rgba(6,95,70,0.18) 0%, rgba(10,36,114,0.28) 60%, rgba(4,12,30,0.4) 100%)",
+      border: `1px solid ${NEONBRD}`,
+      position: "relative",
+      overflow: "hidden",
     }}>
+      {/* Background glow */}
+      <div style={{
+        position: "absolute", inset: 0, pointerEvents: "none",
+        background: `radial-gradient(ellipse 80% 60% at 50% 40%, rgba(0,214,51,0.07) 0%, transparent 70%)`,
+      }} />
+
       {/* Logo */}
       <div style={{
-        width: "clamp(90px,9vw,128px)",
-        height: "clamp(90px,9vw,128px)",
+        width: "clamp(80px,8.5vw,118px)", height: "clamp(80px,8.5vw,118px)",
         display: "flex", alignItems: "center", justifyContent: "center",
-        filter: `drop-shadow(0 0 28px rgba(0,255,65,0.45))`,
+        filter: `drop-shadow(0 0 32px rgba(0,214,51,0.5)) drop-shadow(0 0 12px rgba(0,214,51,0.3))`,
+        flexShrink: 0,
       }}>
         <img src="/logo-kyron.png" alt="System Kyron" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
       </div>
 
-      <div>
+      {/* Title block */}
+      <div style={{ display: "flex", flexDirection: "column", gap: "6px", zIndex: 1 }}>
         <h1 style={{
-          fontSize: "clamp(24px,2.8vw,44px)", fontWeight: 900,
-          color: "#fff", letterSpacing: "-0.03em", margin: 0,
-          lineHeight: 1.05,
+          fontSize: T["3xl"], fontWeight: 900,
+          color: "#fff", letterSpacing: "-0.03em", margin: 0, lineHeight: 1,
         }}>
-          System{" "}
-          <span style={{ color: NEON, textShadow: `0 0 32px ${NEON}` }}>Kyron</span>
+          System <span style={{ color: NEON, textShadow: `0 0 40px ${NEON}88` }}>Kyron</span>
         </h1>
-        <p style={{
-          fontSize: "clamp(11px,1.05vw,15px)",
-          color: LBLUE, margin: "10px 0 0", fontWeight: 500, lineHeight: 1.4,
-        }}>
+        <p style={{ fontSize: T.md, color: LBLUE, margin: 0, fontWeight: 500, letterSpacing: "0.01em", lineHeight: 1.4 }}>
           La línea de teléfono que protege tu negocio
         </p>
       </div>
 
+      {/* Homologado banner */}
       <div style={{
         width: "100%",
-        background: `linear-gradient(135deg, rgba(0,255,65,0.12), rgba(0,255,65,0.04))`,
-        border: `1px solid rgba(0,255,65,0.3)`,
-        borderRadius: "10px", padding: "10px 16px",
+        background: `linear-gradient(90deg, ${NEONLT}, rgba(0,214,51,0.04))`,
+        border: `1px solid ${NEONBRD}`,
+        borderRadius: "10px", padding: "9px 16px",
         display: "flex", alignItems: "center", gap: "8px", justifyContent: "center",
+        zIndex: 1,
       }}>
-        <Shield size={14} color={NEON} strokeWidth={2} />
-        <p style={{ margin: 0, fontSize: "clamp(10px,0.88vw,12px)", color: NEON, fontWeight: 700 }}>
+        <Shield size={13} color={NEON} strokeWidth={2} />
+        <p style={{ margin: 0, fontSize: T.base, color: NEON, fontWeight: 700, letterSpacing: "0.01em" }}>
           Todo homologado: desde el IMEI hasta la contabilidad
         </p>
       </div>
 
-      <div style={{ borderTop: "1px solid rgba(56,189,248,0.15)", paddingTop: "12px", width: "100%" }}>
-        <p style={{ margin: 0, fontSize: "clamp(9px,0.8vw,11px)", color: "rgba(255,255,255,0.45)", lineHeight: 1.7 }}>
+      {/* Three pillars */}
+      <div style={{ display: "flex", gap: "8px", width: "100%", zIndex: 1 }}>
+        {[
+          { icon: Shield, label: "3 Seguros" },
+          { icon: Scale, label: "Legal 24/7" },
+          { icon: BarChart3, label: "Cumplimiento" },
+        ].map(({ icon: Icon, label }) => (
+          <div key={label} style={{
+            flex: 1,
+            background: WHITE10,
+            border: "1px solid rgba(56,189,248,0.13)",
+            borderRadius: "10px",
+            padding: "8px 6px",
+            display: "flex", flexDirection: "column", alignItems: "center", gap: "5px",
+          }}>
+            <Icon size={14} color={LBLUE} strokeWidth={1.8} />
+            <span style={{ fontSize: T.xs, fontWeight: 700, color: WHITE55, letterSpacing: "0.04em" }}>{label}</span>
+          </div>
+        ))}
+      </div>
+
+      {/* Footer note */}
+      <div style={{ zIndex: 1 }}>
+        <p style={{ margin: 0, fontSize: T.xs, color: WHITE30, lineHeight: 1.7, letterSpacing: "0.01em" }}>
           Colegio Gabriela Mistral · Catia la Mar, La Guaira
           <br />
           <span style={{ color: LBLUE, fontWeight: 600 }}>Demo Day Kurios × EY 2026</span>
@@ -157,49 +200,57 @@ function Panel1() {
   );
 }
 
-// ── Panel 2 – El Problema ────────────────────────────────
+// ── Panel 2 – El Problema ─────────────────────────────────────────────────
 function Panel2() {
   const stats = [
-    { num: "21M+", label: "Líneas expuestas a bloqueo CONATEL", icon: Smartphone, color: LBLUE },
-    { num: "1.000×", label: "Multas de hasta 1.000 veces el BCV", icon: AlertTriangle, color: "#FB923C" },
-    { num: "134 h", label: "Horas perdidas al año en papeleo (OCDE)", icon: Clock, color: LBLUE },
-    { num: "61%", label: "PyMEs con incumplimiento laboral", icon: BarChart3, color: NEON },
+    { num: "21M+",   label: "Líneas expuestas\na bloqueo CONATEL",  icon: Smartphone, color: LBLUE },
+    { num: "1.000×", label: "Multas máximas\nsobre el BCV",         icon: AlertTriangle, color: "#FB923C" },
+    { num: "134h",   label: "Al año perdidas\nen papeleo (OCDE)",    icon: Clock, color: LBLUE },
+    { num: "61%",    label: "PyMEs con\nincumplimiento laboral",     icon: BarChart3, color: NEON },
   ];
 
   return (
-    <div style={glassPanel}>
-      <SectionTitle icon={AlertTriangle}>
-        El caos regulatorio{" "}
-        <span style={{ color: NEON }}>venezolano</span>
-      </SectionTitle>
+    <div style={panel}>
+      <SectionHeader icon={AlertTriangle} title="El caos regulatorio" accent="venezolano" />
 
-      <p style={{ margin: 0, fontSize: "clamp(10px,0.88vw,12px)", color: "rgba(255,255,255,0.55)", lineHeight: 1.55 }}>
-        Las empresas venezolanas enfrentan un laberinto de regulaciones que frena su crecimiento y las expone a sanciones severas sin herramientas de cumplimiento accesibles.
+      <p style={{ margin: 0, fontSize: T.sm, color: WHITE55, lineHeight: 1.65, flexShrink: 0 }}>
+        Las empresas venezolanas enfrentan un laberinto de regulaciones que las expone a sanciones severas sin herramientas de cumplimiento accesibles.
       </p>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "clamp(6px,0.8vw,10px)", flex: 1 }}>
+      <Divider />
+
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px", flex: 1, minHeight: 0 }}>
         {stats.map(({ num, label, icon: Icon, color }) => (
           <div key={num} style={{
-            ...glassCard,
-            textAlign: "center",
-            display: "flex", flexDirection: "column", alignItems: "center", gap: "6px",
-            padding: "12px 8px",
+            background: `${color}08`,
+            border: `1px solid ${color}22`,
+            borderRadius: "12px",
+            padding: "12px 10px",
+            display: "flex", flexDirection: "column", gap: "6px",
+            position: "relative", overflow: "hidden",
           }}>
             <div style={{
-              width: "32px", height: "32px", borderRadius: "9px",
-              background: `${color}18`,
-              border: `1px solid ${color}30`,
+              position: "absolute", top: "-10px", right: "-10px",
+              width: "44px", height: "44px",
+              background: `${color}0C`,
+              borderRadius: "50%",
+            }} />
+            <div style={{
+              width: "26px", height: "26px", borderRadius: "7px",
+              background: `${color}14`,
+              border: `1px solid ${color}28`,
               display: "flex", alignItems: "center", justifyContent: "center",
             }}>
-              <Icon size={16} color={color} strokeWidth={1.8} />
+              <Icon size={13} color={color} strokeWidth={1.8} />
             </div>
             <div style={{
-              fontSize: "clamp(18px,1.9vw,26px)", fontWeight: 900,
-              color, lineHeight: 1, textShadow: `0 0 14px ${color}66`,
+              fontSize: T["2xl"], fontWeight: 900,
+              color, lineHeight: 1, letterSpacing: "-0.02em",
+              textShadow: `0 0 20px ${color}55`,
             }}>
               {num}
             </div>
-            <div style={{ fontSize: "clamp(9px,0.82vw,11px)", color: "rgba(255,255,255,0.65)", lineHeight: 1.35 }}>
+            <div style={{ fontSize: T.xs, color: WHITE55, lineHeight: 1.4, whiteSpace: "pre-line" }}>
               {label}
             </div>
           </div>
@@ -209,88 +260,86 @@ function Panel2() {
   );
 }
 
-// ── Panel 3 – Solución ───────────────────────────────────
+// ── Panel 3 – La Solución ─────────────────────────────────────────────────
 function Panel3() {
   const modules = [
-    { name: "Cuenta Personal",       icon: User },
-    { name: "Mi Línea 5G",           icon: Radio },
-    { name: "Contabilidad + Permisos", icon: ClipboardList },
-    { name: "Asesoría Legal",        icon: Scale },
-    { name: "Facturación TPV",       icon: Receipt },
-    { name: "RRHH",                  icon: Users },
-    { name: "Socios",                icon: Handshake },
-    { name: "Sostenibilidad",        icon: Recycle },
-    { name: "Ingeniería IT",         icon: Server },
+    { name: "Cuenta Personal",        icon: User },
+    { name: "Mi Línea 5G",            icon: Radio },
+    { name: "Contabilidad",           icon: ClipboardList },
+    { name: "Asesoría Legal",         icon: Scale },
+    { name: "Facturación TPV",        icon: Receipt },
+    { name: "RRHH",                   icon: Users },
+    { name: "Socios",                 icon: Handshake },
+    { name: "Sostenibilidad",         icon: Recycle },
+    { name: "Ingeniería IT",          icon: Server },
+  ];
+
+  const features = [
+    { icon: CheckCircle2, text: "100% homologado", color: NEON },
+    { icon: Globe, text: "Multi-lenguaje ES / EN", color: LBLUE },
+    { icon: Sparkles, text: "Soporte 24 / 7", color: LBLUE },
   ];
 
   return (
-    <div style={glassPanel}>
-      <SectionTitle icon={Globe}>
-        Ecosistema{" "}
-        <span style={{ color: NEON }}>integral</span>
-      </SectionTitle>
+    <div style={panel}>
+      <SectionHeader icon={Globe} title="Ecosistema" accent="integral" />
 
-      <p style={{ margin: 0, fontSize: "clamp(9px,0.85vw,11px)", color: "rgba(255,255,255,0.5)", lineHeight: 1.4 }}>
-        La primera línea telefónica que homologa tu negocio desde el chip hasta la contabilidad.
+      <p style={{ margin: 0, fontSize: T.sm, color: WHITE55, lineHeight: 1.6, flexShrink: 0 }}>
+        La primera SIM que homologa tu negocio desde el chip hasta la contabilidad.
       </p>
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: "clamp(5px,0.6vw,8px)", flex: 1 }}>
+      <div style={{
+        display: "grid", gridTemplateColumns: "repeat(3,1fr)",
+        gap: "6px", flex: 1, minHeight: 0,
+      }}>
         {modules.map(({ name, icon: Icon }) => (
-          <div
-            key={name}
-            style={{
-              background: "rgba(6,95,70,0.14)",
-              border: "1px solid rgba(0,255,65,0.16)",
-              borderRadius: "10px",
-              padding: "10px 6px",
-              display: "flex", flexDirection: "column", alignItems: "center", gap: "6px",
-              textAlign: "center",
-              transition: "transform 0.15s, border-color 0.15s",
-              cursor: "default",
-            }}
+          <div key={name} style={{
+            background: NEONLT,
+            border: `1px solid ${NEONBRD}`,
+            borderRadius: "10px",
+            padding: "8px 6px",
+            display: "flex", flexDirection: "column", alignItems: "center", gap: "5px",
+            textAlign: "center",
+            transition: "border-color 0.15s, transform 0.15s",
+            cursor: "default",
+          }}
             onMouseEnter={(e) => {
-              (e.currentTarget as HTMLDivElement).style.transform = "translateY(-2px)";
-              (e.currentTarget as HTMLDivElement).style.borderColor = `rgba(0,255,65,0.4)`;
+              (e.currentTarget as HTMLDivElement).style.borderColor = `rgba(0,214,51,0.45)`;
+              (e.currentTarget as HTMLDivElement).style.transform = "translateY(-1px)";
             }}
             onMouseLeave={(e) => {
+              (e.currentTarget as HTMLDivElement).style.borderColor = NEONBRD;
               (e.currentTarget as HTMLDivElement).style.transform = "none";
-              (e.currentTarget as HTMLDivElement).style.borderColor = `rgba(0,255,65,0.16)`;
             }}
           >
             <div style={{
-              width: "28px", height: "28px", borderRadius: "8px",
-              background: "rgba(0,255,65,0.1)",
-              border: "1px solid rgba(0,255,65,0.2)",
+              width: "26px", height: "26px", borderRadius: "7px",
+              background: "rgba(0,214,51,0.12)",
+              border: "1px solid rgba(0,214,51,0.2)",
               display: "flex", alignItems: "center", justifyContent: "center",
             }}>
-              <Icon size={13} color={NEON} strokeWidth={1.8} />
+              <Icon size={12} color={NEON} strokeWidth={1.8} />
             </div>
-            <span style={{ fontSize: "clamp(9px,0.82vw,10.5px)", color: "rgba(255,255,255,0.8)", fontWeight: 600, lineHeight: 1.3 }}>
-              {name}
-            </span>
+            <span style={{ fontSize: T.xs, color: WHITE85, fontWeight: 600, lineHeight: 1.3 }}>{name}</span>
           </div>
         ))}
       </div>
 
-      <div style={{
-        background: `linear-gradient(90deg, rgba(6,95,70,0.3), transparent)`,
-        borderLeft: `2px solid ${NEON}`,
-        borderRadius: "6px",
-        padding: "8px 12px",
-        display: "flex", flexDirection: "column", gap: "4px",
-      }}>
-        <GreenCheck label="100% homologado" />
-        <GreenCheck label="Soporte 24/7" />
-        <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-          <Globe size={13} color={LBLUE} strokeWidth={2.5} />
-          <span style={{ fontSize: "clamp(9px,0.85vw,11px)", color: "rgba(255,255,255,0.8)" }}>Multi‑lenguaje (ES / EN)</span>
-        </div>
+      <Divider />
+
+      <div style={{ display: "flex", flexDirection: "column", gap: "5px", flexShrink: 0 }}>
+        {features.map(({ icon: Icon, text, color }) => (
+          <div key={text} style={{ display: "flex", alignItems: "center", gap: "7px" }}>
+            <Icon size={12} color={color} strokeWidth={2.2} />
+            <span style={{ fontSize: T.sm, color: WHITE85, fontWeight: 500 }}>{text}</span>
+          </div>
+        ))}
       </div>
     </div>
   );
 }
 
-// ── Panel 4 – Kyron Shield ───────────────────────────────
+// ── Panel 4 – Kyron Shield ────────────────────────────────────────────────
 function Panel4() {
   const shields = [
     { icon: Smartphone, text: "Reposición de equipo por robo o daño" },
@@ -299,162 +348,197 @@ function Panel4() {
   ];
 
   return (
-    <div style={{ ...glassPanel, border: `1px solid rgba(0,255,65,0.2)` }}>
-      <div>
-        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px" }}>
-          <Shield size={20} color={NEON} strokeWidth={1.8} style={{ filter: `drop-shadow(0 0 8px ${NEON}88)` }} />
-          <h2 style={{ margin: 0, fontSize: "clamp(14px,1.5vw,20px)", fontWeight: 800, color: "#fff" }}>
+    <div style={{
+      ...panel,
+      border: `1px solid ${NEONBRD}`,
+      background: "linear-gradient(155deg, rgba(6,95,70,0.12) 0%, rgba(5,13,31,0.6) 100%)",
+    }}>
+      {/* Header */}
+      <div style={{ flexShrink: 0 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "9px", marginBottom: "3px" }}>
+          <Shield size={20} color={NEON} strokeWidth={1.8}
+            style={{ filter: `drop-shadow(0 0 10px ${NEON}88)`, flexShrink: 0 }} />
+          <h2 style={{ margin: 0, fontSize: T.xl, fontWeight: 900, color: "#fff", letterSpacing: "-0.02em" }}>
             KYRON SHIELD
           </h2>
         </div>
-        <p style={{ margin: 0, fontSize: "clamp(10px,0.9vw,12px)", color: NEON, fontWeight: 600 }}>
+        <p style={{ margin: 0, fontSize: T.sm, color: NEON, fontWeight: 700, letterSpacing: "0.04em", paddingLeft: "29px" }}>
           La única SIM con 3 seguros
         </p>
       </div>
 
-      <div style={{ display: "flex", flexDirection: "column", gap: "7px" }}>
-        {shields.map(({ icon: Icon, text }) => (
-          <div
-            key={text}
-            style={{
-              display: "flex", alignItems: "center", gap: "10px",
-              padding: "9px 12px",
-              background: "rgba(6,95,70,0.18)",
-              border: "1px solid rgba(0,255,65,0.15)",
-              borderRadius: "10px",
-              transition: "border-color 0.15s",
-            }}
-            onMouseEnter={(e) => ((e.currentTarget as HTMLDivElement).style.borderColor = "rgba(0,255,65,0.4)")}
-            onMouseLeave={(e) => ((e.currentTarget as HTMLDivElement).style.borderColor = "rgba(0,255,65,0.15)")}
+      <Divider />
+
+      {/* Shield items */}
+      <div style={{ display: "flex", flexDirection: "column", gap: "6px", flexShrink: 0 }}>
+        {shields.map(({ icon: Icon, text }, i) => (
+          <div key={text} style={{
+            display: "flex", alignItems: "center", gap: "10px",
+            padding: "8px 11px",
+            background: NEONLT,
+            border: `1px solid ${NEONBRD}`,
+            borderRadius: "10px",
+            transition: "border-color 0.15s",
+          }}
+            onMouseEnter={(e) => ((e.currentTarget as HTMLDivElement).style.borderColor = "rgba(0,214,51,0.4)")}
+            onMouseLeave={(e) => ((e.currentTarget as HTMLDivElement).style.borderColor = NEONBRD)}
           >
             <div style={{
-              width: "26px", height: "26px", borderRadius: "7px",
-              background: "rgba(0,255,65,0.1)",
-              border: "1px solid rgba(0,255,65,0.2)",
+              width: "24px", height: "24px", borderRadius: "6px",
+              background: "rgba(0,214,51,0.12)", border: "1px solid rgba(0,214,51,0.2)",
               display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
             }}>
-              <Icon size={13} color={NEON} strokeWidth={1.8} />
+              <Icon size={12} color={NEON} strokeWidth={1.8} />
             </div>
-            <span style={{ fontSize: "clamp(10px,0.88vw,12px)", color: "rgba(255,255,255,0.85)" }}>{text}</span>
+            <span style={{ fontSize: T.base, color: WHITE85, lineHeight: 1.35 }}>{text}</span>
+            <div style={{
+              marginLeft: "auto", width: "18px", height: "18px", flexShrink: 0,
+              borderRadius: "50%", background: "rgba(0,214,51,0.12)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+            }}>
+              <span style={{ fontSize: "9px", fontWeight: 800, color: NEON }}>{i + 1}</span>
+            </div>
           </div>
         ))}
       </div>
 
+      {/* Quote */}
       <div style={{
-        ...glassBlue,
-        fontStyle: "italic",
-        fontSize: "clamp(10px,0.88vw,12px)",
-        color: "rgba(255,255,255,0.85)",
-        lineHeight: 1.55,
-        borderLeft: `3px solid ${LBLUE}`,
         background: "rgba(56,189,248,0.06)",
+        border: `1px solid ${LBLUEBRD}`,
+        borderLeft: `3px solid ${LBLUE}`,
+        borderRadius: "8px",
+        padding: "9px 12px",
+        fontStyle: "italic",
+        fontSize: T.sm,
+        color: WHITE85,
+        lineHeight: 1.6,
+        flexShrink: 0,
       }}>
         "Otros venden minutos. Nosotros proponemos vender{" "}
-        <strong style={{ color: NEON }}>cumplimiento</strong>."
+        <strong style={{ color: NEON, fontStyle: "normal" }}>cumplimiento</strong>."
       </div>
 
-      <div style={{ borderTop: "1px solid rgba(56,189,248,0.12)", paddingTop: "12px" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "8px" }}>
-          <Leaf size={14} color={NEON} strokeWidth={2} />
-          <h3 style={{ margin: 0, fontSize: "clamp(11px,1.05vw,14px)", fontWeight: 700, color: "#fff" }}>
-            Sostenibilidad inteligente
-          </h3>
+      <Divider />
+
+      {/* Eco section */}
+      <div style={{ display: "flex", gap: "10px", alignItems: "flex-start", flex: 1, minHeight: 0, overflow: "hidden" }}>
+        <div style={{
+          width: "42px", height: "42px", flexShrink: 0,
+          border: `1px dashed ${NEONBRD}`,
+          borderRadius: "10px",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          background: NEONLT,
+        }}>
+          <Trash2 size={18} color={NEON} strokeWidth={1.6} />
         </div>
-        <div style={{ display: "flex", gap: "12px" }}>
-          <div style={{
-            width: "clamp(44px,4.5vw,58px)", height: "clamp(44px,4.5vw,58px)",
-            border: "1px dashed rgba(0,255,65,0.35)", borderRadius: "10px",
-            display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
-            background: "rgba(6,95,70,0.15)",
-          }}>
-            <Trash2 size={20} color={NEON} strokeWidth={1.6} />
+        <div style={{ display: "flex", flexDirection: "column", gap: "5px", overflow: "hidden" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+            <Leaf size={11} color={NEON} strokeWidth={2} />
+            <span style={{ fontSize: T.md, fontWeight: 700, color: "#fff" }}>Sostenibilidad inteligente</span>
           </div>
-          <div style={{ display: "flex", flexDirection: "column", gap: "6px", justifyContent: "center" }}>
-            <p style={{ margin: 0, fontSize: "clamp(9px,0.85vw,11px)", color: "rgba(255,255,255,0.65)", lineHeight: 1.5 }}>
-              Smart Bins · inducción magnética
-              <br />
-              <span style={{ color: LBLUE, fontWeight: 600 }}>Alianza Ameru.AI</span>
-              {" — "}Eco‑Créditos por reciclar.
-            </p>
-            <DevBadge />
-          </div>
+          <p style={{ margin: 0, fontSize: T.sm, color: WHITE55, lineHeight: 1.5 }}>
+            Smart Bins · inducción magnética
+            <br />
+            <span style={{ color: LBLUE, fontWeight: 600 }}>Alianza Ameru.AI</span>
+            {" — "}Eco-Créditos por reciclar.
+          </p>
+          <DevBadge />
         </div>
       </div>
     </div>
   );
 }
 
-// ── Panel 5 – Aliados + Roadmap ──────────────────────────
+// ── Panel 5 – Aliados + Roadmap ───────────────────────────────────────────
 function Panel5() {
   const allies = ["SAMSUNG", "XIAOMI", "MOTOROLA", "APPLE", "HKA FACTORY", "AMERU.AI"];
   const roadmap = [
-    { year: "2026", text: "Validación Caracas / La Guaira · Plataforma bilingüe (ES/EN)" },
+    { year: "2026", text: "Validación Caracas / La Guaira · Plataforma bilingüe ES/EN" },
     { year: "2027", text: "Expansión Colombia / Panamá" },
     { year: "2028+", text: "Evaluación México / EE.UU." },
   ];
+  const market = ["500K PyMEs · Venezuela", "8.5M · Latam", "21M+ consumidores"];
 
   return (
-    <div style={glassPanel}>
-      <SectionTitle icon={Handshake}>Aliados estratégicos</SectionTitle>
+    <div style={panel}>
+      <SectionHeader icon={Handshake} title="Aliados" accent="estratégicos" />
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: "clamp(5px,0.6vw,8px)" }}>
+      {/* Ally grid */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: "6px", flexShrink: 0 }}>
         {allies.map((name) => (
-          <div
-            key={name}
-            style={{
-              ...glassBlue,
-              display: "flex", flexDirection: "column", alignItems: "center", gap: "6px",
-              padding: "10px 6px", textAlign: "center",
-              transition: "transform 0.15s",
-              cursor: "default",
+          <div key={name} style={{
+            background: LBLUELT,
+            border: `1px solid ${LBLUEBRD}`,
+            borderRadius: "10px",
+            padding: "8px 6px",
+            display: "flex", flexDirection: "column", alignItems: "center", gap: "5px",
+            textAlign: "center",
+            transition: "transform 0.15s, border-color 0.15s",
+            cursor: "default",
+          }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLDivElement).style.transform = "scale(1.03)";
+              (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(56,189,248,0.45)";
             }}
-            onMouseEnter={(e) => ((e.currentTarget as HTMLDivElement).style.transform = "scale(1.04)")}
-            onMouseLeave={(e) => ((e.currentTarget as HTMLDivElement).style.transform = "none")}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLDivElement).style.transform = "none";
+              (e.currentTarget as HTMLDivElement).style.borderColor = LBLUEBRD;
+            }}
           >
-            <Building2 size={16} color={LBLUE} strokeWidth={1.7} />
-            <span style={{ fontSize: "10px", fontWeight: 700, color: "rgba(255,255,255,0.85)" }}>{name}</span>
+            <Building2 size={14} color={LBLUE} strokeWidth={1.7} />
+            <span style={{ fontSize: T.xs, fontWeight: 700, color: WHITE85, letterSpacing: "0.03em" }}>{name}</span>
             <DevBadge />
           </div>
         ))}
       </div>
 
-      <div>
-        <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "8px" }}>
-          <MapPin size={13} color={LBLUE} strokeWidth={2} />
-          <h3 style={{ margin: 0, fontSize: "clamp(11px,1.05vw,13px)", fontWeight: 700, color: LBLUE }}>
+      <Divider />
+
+      {/* Roadmap */}
+      <div style={{ display: "flex", flexDirection: "column", gap: "1px", flex: 1, minHeight: 0, overflow: "hidden" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "7px", flexShrink: 0 }}>
+          <MapPin size={12} color={LBLUE} strokeWidth={2} />
+          <h3 style={{ margin: 0, fontSize: T.md, fontWeight: 700, color: LBLUE, letterSpacing: "0.01em" }}>
             Hoja de ruta
           </h3>
         </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: "7px" }}>
-          {roadmap.map(({ year, text }) => (
-            <div key={year} style={{ display: "flex", gap: "10px", alignItems: "flex-start" }}>
+        {roadmap.map(({ year, text }, i) => (
+          <div key={year} style={{ display: "flex", gap: "0", alignItems: "stretch", flexShrink: 0 }}>
+            {/* Timeline line */}
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginRight: "10px" }}>
               <div style={{
-                minWidth: "48px", padding: "3px 8px",
-                background: "rgba(56,189,248,0.1)",
-                border: "1px solid rgba(56,189,248,0.3)",
-                borderRadius: "6px",
-                fontSize: "clamp(9px,0.85vw,11px)", fontWeight: 800,
-                color: LBLUE, textAlign: "center", flexShrink: 0,
+                width: "8px", height: "8px", borderRadius: "50%", flexShrink: 0,
+                background: LBLUE, boxShadow: `0 0 8px ${LBLUE}88`, marginTop: "3px",
+              }} />
+              {i < roadmap.length - 1 && (
+                <div style={{ width: "1px", flex: 1, background: "rgba(56,189,248,0.2)", minHeight: "14px", marginTop: "2px" }} />
+              )}
+            </div>
+            <div style={{ display: "flex", gap: "8px", alignItems: "flex-start", paddingBottom: i < roadmap.length - 1 ? "8px" : "0" }}>
+              <div style={{
+                padding: "2px 7px", borderRadius: "5px",
+                background: "rgba(56,189,248,0.1)", border: `1px solid ${LBLUEBRD}`,
+                fontSize: T.xs, fontWeight: 800, color: LBLUE,
+                whiteSpace: "nowrap", flexShrink: 0, marginTop: "1px",
               }}>
                 {year}
               </div>
-              <span style={{ fontSize: "clamp(9px,0.85vw,11px)", color: "rgba(255,255,255,0.7)", lineHeight: 1.5 }}>
-                {text}
-              </span>
+              <span style={{ fontSize: T.sm, color: WHITE55, lineHeight: 1.5 }}>{text}</span>
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
       </div>
 
-      <div style={{ borderTop: "1px solid rgba(56,189,248,0.12)", paddingTop: "10px", display: "flex", gap: "6px", flexWrap: "wrap" }}>
-        {["500K PyMEs · Venezuela", "8.5M · Latam", "21M+ consumidores"].map((d) => (
+      <Divider />
+
+      {/* Market pills */}
+      <div style={{ display: "flex", gap: "5px", flexWrap: "wrap", flexShrink: 0 }}>
+        {market.map((d) => (
           <span key={d} style={{
-            fontSize: "clamp(9px,0.85vw,10.5px)",
-            padding: "3px 10px",
-            background: "rgba(0,255,65,0.08)",
-            border: "1px solid rgba(0,255,65,0.25)",
-            borderRadius: "99px",
-            color: NEON, fontWeight: 600,
+            fontSize: T.xs, padding: "3px 9px",
+            background: NEONLT, border: `1px solid ${NEONBRD}`,
+            borderRadius: "99px", color: NEON, fontWeight: 700,
           }}>
             {d}
           </span>
@@ -464,102 +548,114 @@ function Panel5() {
   );
 }
 
-// ── Panel 6 – Equipo + Contacto ──────────────────────────
+// ── Panel 6 – Equipo + Contacto ───────────────────────────────────────────
 function Panel6() {
   const team = [
-    { name: "Carlos Mattar",    role: "Co-CEO & Lead Architecture" },
+    { name: "Carlos Mattar",     role: "Co-CEO & Lead Architecture" },
     { name: "Sebastián Garrido", role: "Co-CEO & Network Slicing" },
-    { name: "Marcos Sousa",     role: "Co-CEO & Operational Flow" },
+    { name: "Marcos Sousa",      role: "Co-CEO & Operational Flow" },
   ];
   const contact = [
-    { icon: Mail,       text: "contacto@systemkyron.com" },
-    { icon: Phone,      text: "+58 XXX-XXX-XXXX" },
-    { icon: Globe,      text: "www.systemkyron.com" },
+    { icon: Mail,  text: "contacto@systemkyron.com" },
+    { icon: Phone, text: "+58 XXX-XXX-XXXX" },
+    { icon: Globe, text: "www.systemkyron.com" },
   ];
 
   return (
-    <div style={glassPanel}>
-      <div>
-        <h2 style={{ margin: 0, fontSize: "clamp(13px,1.35vw,18px)", fontWeight: 800, color: "#fff", lineHeight: 1.2 }}>
-          Hecho en{" "}
-          <span style={{ color: NEON }}>Catia la Mar</span>,
+    <div style={panel}>
+      {/* Heading */}
+      <div style={{ flexShrink: 0 }}>
+        <h2 style={{ margin: 0, fontSize: T.xl, fontWeight: 900, color: "#fff", lineHeight: 1.15, letterSpacing: "-0.02em" }}>
+          Hecho en <span style={{ color: NEON }}>Catia la Mar</span>,
           <br />para el mundo
         </h2>
       </div>
 
-      <div style={{ display: "flex", justifyContent: "space-around", gap: "8px" }}>
+      {/* Team */}
+      <div style={{ display: "flex", gap: "6px", flexShrink: 0 }}>
         {team.map(({ name, role }) => (
-          <div key={name} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "8px" }}>
+          <div key={name} style={{
+            flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: "7px",
+            background: NEONLT, border: `1px solid ${NEONBRD}`,
+            borderRadius: "11px", padding: "9px 6px",
+          }}>
             <div style={{
-              width: "clamp(48px,4.8vw,66px)",
-              height: "clamp(48px,4.8vw,66px)",
+              width: "clamp(36px,3.8vw,50px)", height: "clamp(36px,3.8vw,50px)",
               borderRadius: "50%",
-              background: "rgba(6,95,70,0.2)",
-              border: `1.5px solid rgba(0,255,65,0.3)`,
+              background: "rgba(6,95,70,0.25)", border: `1.5px solid rgba(0,214,51,0.35)`,
               display: "flex", alignItems: "center", justifyContent: "center",
-              boxShadow: `0 0 18px rgba(0,255,65,0.12)`,
+              boxShadow: `0 0 16px rgba(0,214,51,0.12)`,
             }}>
-              <User size={22} color={NEON} strokeWidth={1.5} />
+              <User size={18} color={NEON} strokeWidth={1.5} />
             </div>
             <div style={{ textAlign: "center" }}>
-              <div style={{ fontWeight: 700, fontSize: "clamp(9px,0.88vw,12px)", color: "#fff" }}>{name}</div>
-              <div style={{ fontSize: "clamp(8px,0.75vw,10.5px)", color: LBLUE, marginTop: "2px", lineHeight: 1.3 }}>{role}</div>
+              <div style={{ fontWeight: 700, fontSize: T.sm, color: "#fff", lineHeight: 1.2 }}>{name}</div>
+              <div style={{ fontSize: T.xs, color: LBLUE, marginTop: "2px", lineHeight: 1.3 }}>{role}</div>
             </div>
           </div>
         ))}
       </div>
 
+      {/* Quote */}
       <div style={{
         borderLeft: `2px solid ${NEON}`,
         paddingLeft: "10px",
         fontStyle: "italic",
-        fontSize: "clamp(9px,0.85vw,11px)",
-        color: "rgba(255,255,255,0.55)",
-        lineHeight: 1.6,
+        fontSize: T.sm,
+        color: WHITE55,
+        lineHeight: 1.65,
+        flexShrink: 0,
       }}>
         "Crecimos donde los apagones borran datos y la humedad destruye papeles. Por eso creamos esta propuesta."
       </div>
 
+      <Divider />
+
+      {/* CTA */}
       <div style={{
-        background: `linear-gradient(135deg, rgba(0,255,65,0.1), rgba(6,95,70,0.12))`,
-        border: `1px solid rgba(0,255,65,0.25)`,
-        borderRadius: "12px", padding: "12px 14px", textAlign: "center",
+        background: `linear-gradient(135deg, rgba(0,214,51,0.10), rgba(6,95,70,0.10))`,
+        border: `1px solid ${NEONBRD}`,
+        borderRadius: "12px", padding: "10px 12px",
+        flexShrink: 0,
       }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", marginBottom: "8px" }}>
-          <ArrowRight size={14} color={NEON} strokeWidth={2.5} />
-          <p style={{ margin: 0, fontSize: "clamp(11px,1vw,14px)", fontWeight: 700, color: "#fff" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "7px" }}>
+          <ArrowRight size={12} color={NEON} strokeWidth={2.5} />
+          <p style={{ margin: 0, fontSize: T.md, fontWeight: 800, color: "#fff", letterSpacing: "-0.01em" }}>
             ¿Quieres ser parte del pilotaje 2026?
           </p>
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
           {contact.map(({ icon: Icon, text }) => (
-            <div key={text} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "6px" }}>
-              <Icon size={11} color={LBLUE} strokeWidth={2} />
-              <span style={{ fontSize: "clamp(9px,0.85vw,11px)", color: "rgba(255,255,255,0.65)" }}>{text}</span>
+            <div key={text} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+              <Icon size={10} color={LBLUE} strokeWidth={2} />
+              <span style={{ fontSize: T.sm, color: WHITE55 }}>{text}</span>
             </div>
           ))}
         </div>
       </div>
 
-      <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+      {/* QR placeholder */}
+      <div style={{ display: "flex", gap: "10px", alignItems: "center", flexShrink: 0 }}>
         <div style={{
-          width: "clamp(48px,4.5vw,62px)", height: "clamp(48px,4.5vw,62px)",
-          border: "1px dashed rgba(56,189,248,0.35)",
-          borderRadius: "10px",
+          width: "clamp(42px,4.2vw,56px)", height: "clamp(42px,4.2vw,56px)",
+          border: `1px dashed ${LBLUEBRD}`,
+          borderRadius: "9px",
           display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
-          background: "rgba(56,189,248,0.05)",
+          background: LBLUELT,
         }}>
-          <Smartphone size={22} color={LBLUE} strokeWidth={1.5} />
+          <Smartphone size={18} color={LBLUE} strokeWidth={1.5} />
         </div>
-        <p style={{ margin: 0, fontSize: "clamp(9px,0.85vw,11px)", color: "rgba(255,255,255,0.4)" }}>
+        <p style={{ margin: 0, fontSize: T.sm, color: WHITE30 }}>
           Código QR — Escanea para más información
         </p>
       </div>
 
+      {/* Footer */}
       <div style={{
-        borderTop: "1px solid rgba(56,189,248,0.1)", paddingTop: "8px",
+        borderTop: "1px solid rgba(56,189,248,0.1)", paddingTop: "7px",
         textAlign: "center",
-        fontSize: "clamp(8px,0.75vw,10px)", color: "rgba(255,255,255,0.3)", lineHeight: 1.5,
+        fontSize: T.xs, color: WHITE30, lineHeight: 1.5,
+        flexShrink: 0,
       }}>
         System Kyron · Propuesta en desarrollo · Colegio Gabriela Mistral · Kurios × EY Demo Day 2026
       </div>
@@ -567,7 +663,7 @@ function Panel6() {
   );
 }
 
-// ── Main Page ────────────────────────────────────────────
+// ── Main Page ──────────────────────────────────────────────────────────────
 export function Triptych() {
   const [face, setFace] = useState<"front" | "back">("front");
   const [isDownloading, setIsDownloading] = useState(false);
@@ -576,34 +672,23 @@ export function Triptych() {
   const downloadPng = useCallback(async (targetFace: "front" | "back") => {
     if (!panelsRef.current || isDownloading) return;
     setIsDownloading(true);
-
     const prevFace = face;
     let switched = false;
-
     try {
       if (face !== targetFace) {
         setFace(targetFace);
         switched = true;
         await new Promise(r => setTimeout(r, 350));
       }
-
       const canvas = await html2canvas(panelsRef.current, {
         backgroundColor: "#040c1e",
-        scale: 2,
-        useCORS: true,
-        allowTaint: true,
-        logging: false,
+        scale: 2, useCORS: true, allowTaint: true, logging: false,
       });
-
       const url = canvas.toDataURL("image/png");
       const a = document.createElement("a");
       a.href = url;
-      a.download = targetFace === "front"
-        ? "system-kyron-cara-frontal.png"
-        : "system-kyron-cara-trasera.png";
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
+      a.download = targetFace === "front" ? "system-kyron-cara-frontal.png" : "system-kyron-cara-trasera.png";
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
     } finally {
       if (switched) setFace(prevFace);
       setIsDownloading(false);
@@ -614,74 +699,63 @@ export function Triptych() {
     <div style={{
       height: "100vh",
       overflow: "hidden",
-      background: `radial-gradient(ellipse at 15% 15%, #0d3494 0%, ${DBGD} 45%, #040c1e 100%)`,
-      fontFamily: "'Inter', 'Poppins', system-ui, sans-serif",
-      padding: "clamp(10px,1.2vw,20px)",
+      background: `radial-gradient(ellipse 90% 80% at 15% 10%, #0d3494 0%, #0A2472 40%, #040c1e 100%)`,
+      fontFamily: "'Inter', system-ui, sans-serif",
+      padding: "clamp(10px,1.2vw,18px)",
       display: "flex", flexDirection: "column",
-      gap: "clamp(8px,0.9vw,14px)",
+      gap: "clamp(8px,0.9vw,12px)",
       boxSizing: "border-box",
     }}>
 
       {/* ── Header ── */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "10px" }}>
-
+      <div style={{
+        display: "flex", justifyContent: "space-between", alignItems: "center",
+        flexShrink: 0, gap: "10px",
+      }}>
         {/* Brand */}
-        <div style={{ display: "flex", alignItems: "center", gap: "clamp(8px,1vw,14px)" }}>
-          <img
-            src="/logo-kyron.png" alt="System Kyron"
-            style={{
-              width: "clamp(36px,3.8vw,50px)", height: "clamp(36px,3.8vw,50px)",
-              objectFit: "contain",
-              filter: `drop-shadow(0 0 10px rgba(0,255,65,0.5))`,
-            }}
-          />
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          <img src="/logo-kyron.png" alt="System Kyron" style={{
+            width: "clamp(32px,3.4vw,46px)", height: "clamp(32px,3.4vw,46px)",
+            objectFit: "contain",
+            filter: `drop-shadow(0 0 10px rgba(0,214,51,0.55))`,
+          }} />
           <div>
             <div style={{
-              fontSize: "clamp(17px,2.1vw,30px)", fontWeight: 900,
-              color: "#fff", letterSpacing: "-0.02em",
+              fontSize: T["2xl"], fontWeight: 900,
+              color: "#fff", letterSpacing: "-0.025em", lineHeight: 1,
             }}>
               System <span style={{ color: NEON, textShadow: `0 0 22px ${NEON}` }}>Kyron</span>
             </div>
-            <div style={{ fontSize: "clamp(9px,0.82vw,11px)", color: "rgba(255,255,255,0.4)", marginTop: "1px" }}>
+            <div style={{ fontSize: T.xs, color: WHITE30, marginTop: "2px", letterSpacing: "0.02em" }}>
               Tríptico Digital · Demo Day Kurios × EY 2026
             </div>
           </div>
         </div>
 
-        <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
-          {/* Download PNG buttons */}
+        {/* Controls */}
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          {/* Download buttons */}
           {(["front", "back"] as const).map((f) => {
-            const isGreen = f === "front";
-            const clr = isGreen ? NEON : LBLUE;
-            const bg = isGreen ? "rgba(0,255,65,0.08)" : "rgba(56,189,248,0.07)";
-            const bgHover = isGreen ? "rgba(0,255,65,0.16)" : "rgba(56,189,248,0.14)";
-            const bgActive = "rgba(255,255,255,0.06)";
-            const brd = isGreen ? "rgba(0,255,65,0.3)" : "rgba(56,189,248,0.3)";
-            const brdHover = isGreen ? "rgba(0,255,65,0.55)" : "rgba(56,189,248,0.55)";
-            const label = f === "front" ? "Frontal" : "Trasera";
+            const isG = f === "front";
+            const clr = isG ? NEON : LBLUE;
+            const bg  = isG ? NEONLT : LBLUELT;
+            const brd = isG ? NEONBRD : LBLUEBRD;
             return (
-              <button
-                key={f}
-                onClick={() => downloadPng(f)}
-                disabled={isDownloading}
-                title={`Descargar cara ${label} como PNG`}
+              <button key={f} onClick={() => downloadPng(f)} disabled={isDownloading}
                 style={{
                   display: "flex", alignItems: "center", gap: "5px",
-                  padding: "7px clamp(9px,1.1vw,14px)",
-                  borderRadius: "8px",
-                  border: `1px solid ${isDownloading ? "rgba(255,255,255,0.12)" : brd}`,
+                  padding: "6px clamp(8px,1vw,13px)",
+                  borderRadius: "8px", border: `1px solid ${isDownloading ? WHITE10 : brd}`,
                   cursor: isDownloading ? "not-allowed" : "pointer",
-                  fontSize: "clamp(10px,0.88vw,12px)", fontWeight: 600,
-                  fontFamily: "inherit",
-                  background: isDownloading ? bgActive : bg,
-                  color: isDownloading ? "rgba(255,255,255,0.3)" : clr,
-                  transition: "background 0.2s, border-color 0.2s, color 0.2s",
-                  opacity: isDownloading ? 0.6 : 1,
+                  fontSize: T.sm, fontWeight: 600, fontFamily: "inherit",
+                  background: isDownloading ? "rgba(255,255,255,0.03)" : bg,
+                  color: isDownloading ? WHITE30 : clr,
+                  transition: "all 0.18s", opacity: isDownloading ? 0.5 : 1,
                 }}
                 onMouseEnter={(e) => {
                   if (isDownloading) return;
-                  (e.currentTarget as HTMLButtonElement).style.background = bgHover;
-                  (e.currentTarget as HTMLButtonElement).style.borderColor = brdHover;
+                  (e.currentTarget as HTMLButtonElement).style.background = isG ? "rgba(0,214,51,0.18)" : "rgba(56,189,248,0.15)";
+                  (e.currentTarget as HTMLButtonElement).style.borderColor = isG ? "rgba(0,214,51,0.5)" : "rgba(56,189,248,0.5)";
                 }}
                 onMouseLeave={(e) => {
                   if (isDownloading) return;
@@ -689,15 +763,12 @@ export function Triptych() {
                   (e.currentTarget as HTMLButtonElement).style.borderColor = brd;
                 }}
               >
-                <Download size={12} strokeWidth={2} />
-                {isDownloading ? "..." : label}
+                <Download size={11} strokeWidth={2} />
+                {isDownloading ? "..." : (f === "front" ? "Frontal" : "Trasera")}
                 <span style={{
-                  fontSize: "9px", fontWeight: 700, padding: "1px 5px",
-                  borderRadius: "4px",
-                  background: isDownloading ? "rgba(255,255,255,0.06)" : `${clr}18`,
-                  border: `1px solid ${isDownloading ? "rgba(255,255,255,0.1)" : `${clr}30`}`,
-                  color: isDownloading ? "rgba(255,255,255,0.3)" : clr,
-                  letterSpacing: "0.04em",
+                  fontSize: "8px", fontWeight: 800, padding: "1px 4px",
+                  borderRadius: "3px", background: `${clr}18`,
+                  border: `1px solid ${clr}30`, color: clr,
                 }}>PNG</span>
               </button>
             );
@@ -707,28 +778,23 @@ export function Triptych() {
           <div style={{
             display: "flex",
             background: "rgba(255,255,255,0.04)",
-            border: "1px solid rgba(56,189,248,0.2)",
-            borderRadius: "10px", padding: "3px", gap: "3px",
+            border: "1px solid rgba(56,189,248,0.18)",
+            borderRadius: "10px", padding: "3px", gap: "2px",
           }}>
             {(["front", "back"] as const).map((f) => (
-              <button
-                key={f}
-                onClick={() => setFace(f)}
-                style={{
-                  padding: "6px clamp(10px,1.3vw,18px)",
-                  borderRadius: "7px", border: "none", cursor: "pointer",
-                  fontSize: "clamp(10px,0.9vw,12px)", fontWeight: 700,
-                  fontFamily: "inherit",
-                  transition: "all 0.22s ease",
-                  background: face === f
-                    ? face === "front" ? DGREEN : DBGD
-                    : "transparent",
-                  color: face === f ? (face === "front" ? NEON : LBLUE) : "rgba(255,255,255,0.5)",
-                  boxShadow: face === f
-                    ? face === "front" ? `0 0 14px rgba(0,255,65,0.3)` : `0 0 14px rgba(56,189,248,0.3)`
-                    : "none",
-                }}
-              >
+              <button key={f} onClick={() => setFace(f)} style={{
+                padding: "5px clamp(9px,1.2vw,16px)",
+                borderRadius: "7px", border: "none", cursor: "pointer",
+                fontSize: T.sm, fontWeight: 700, fontFamily: "inherit",
+                transition: "all 0.2s ease",
+                background: face === f
+                  ? (face === "front" ? "rgba(0,214,51,0.18)" : "rgba(10,36,114,0.8)")
+                  : "transparent",
+                color: face === f ? (face === "front" ? NEON : LBLUE) : WHITE30,
+                boxShadow: face === f
+                  ? (face === "front" ? `0 0 12px rgba(0,214,51,0.25)` : `0 0 12px rgba(56,189,248,0.25)`)
+                  : "none",
+              }}>
                 {f === "front" ? "Cara Frontal" : "Cara Trasera"}
               </button>
             ))}
@@ -738,35 +804,33 @@ export function Triptych() {
 
       {/* ── Face label ── */}
       <div style={{
-        display: "inline-flex", alignSelf: "flex-start",
-        alignItems: "center", gap: "8px",
-        padding: "7px 14px",
-        background: "rgba(255,255,255,0.04)",
-        border: "1px solid rgba(56,189,248,0.15)",
-        borderRadius: "12px",
+        display: "inline-flex", alignSelf: "flex-start", alignItems: "center", gap: "7px",
+        padding: "5px 12px",
+        background: "rgba(255,255,255,0.03)",
+        border: "1px solid rgba(56,189,248,0.13)",
+        borderRadius: "99px", flexShrink: 0,
       }}>
-        <ChevronRight size={13} color={LBLUE} strokeWidth={2.5} />
-        <span style={{ fontSize: "clamp(10px,0.88vw,12px)", fontWeight: 600, color: "rgba(255,255,255,0.8)" }}>
+        <div style={{
+          width: "6px", height: "6px", borderRadius: "50%",
+          background: face === "front" ? NEON : LBLUE,
+          boxShadow: `0 0 6px ${face === "front" ? NEON : LBLUE}`,
+        }} />
+        <span style={{ fontSize: T.sm, fontWeight: 600, color: WHITE55 }}>
           {face === "front"
-            ? "Cara Frontal: Portada · El Problema · La Solución"
-            : "Cara Trasera: Kyron Shield · Aliados + Roadmap · Equipo + Contacto"}
+            ? "Cara Frontal · Portada · El Problema · La Solución"
+            : "Cara Trasera · Kyron Shield · Aliados + Roadmap · Equipo + Contacto"}
         </span>
       </div>
 
       {/* ── Panels ── */}
-      <div ref={panelsRef} style={{ display: "flex", gap: "clamp(8px,1vw,14px)", flex: 1, minHeight: 0 }}>
+      <div ref={panelsRef} style={{
+        display: "flex", gap: "clamp(8px,1vw,12px)",
+        flex: 1, minHeight: 0, overflow: "hidden",
+      }}>
         {face === "front" ? (
-          <>
-            <Panel1 />
-            <Panel2 />
-            <Panel3 />
-          </>
+          <><Panel1 /><Panel2 /><Panel3 /></>
         ) : (
-          <>
-            <Panel4 />
-            <Panel5 />
-            <Panel6 />
-          </>
+          <><Panel4 /><Panel5 /><Panel6 /></>
         )}
       </div>
     </div>
