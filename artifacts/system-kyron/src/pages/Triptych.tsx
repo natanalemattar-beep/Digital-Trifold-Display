@@ -166,19 +166,19 @@ function Panel1() {
     >
       <div
         style={{
-          width: "clamp(70px,7vw,100px)",
-          height: "clamp(70px,7vw,100px)",
-          background: `radial-gradient(circle at 40% 40%, rgba(0,255,0,0.25), rgba(0,255,0,0.05))`,
-          border: `2px solid ${ACCENT}`,
-          borderRadius: "50%",
+          width: "clamp(90px,9vw,130px)",
+          height: "clamp(90px,9vw,130px)",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          fontSize: "clamp(32px,4vw,48px)",
-          boxShadow: `0 0 40px ${ACCENT}44`,
+          filter: `drop-shadow(0 0 24px ${ACCENT}66)`,
         }}
       >
-        🛡️
+        <img
+          src="/logo-kyron.png"
+          alt="System Kyron Logo"
+          style={{ width: "100%", height: "100%", objectFit: "contain" }}
+        />
       </div>
 
       <div>
@@ -641,22 +641,34 @@ export function Triptych() {
           gap: "10px",
         }}
       >
-        <div>
-          <h1
+        <div style={{ display: "flex", alignItems: "center", gap: "clamp(8px,1vw,14px)" }}>
+          <img
+            src="/logo-kyron.png"
+            alt="System Kyron Logo"
             style={{
-              margin: 0,
-              fontSize: "clamp(18px,2.2vw,32px)",
-              fontWeight: 900,
-              color: "#FFFFFF",
-              letterSpacing: "-0.02em",
+              width: "clamp(38px,4vw,52px)",
+              height: "clamp(38px,4vw,52px)",
+              objectFit: "contain",
+              filter: `drop-shadow(0 0 10px ${ACCENT}66)`,
             }}
-          >
-            System{" "}
-            <span style={{ color: ACCENT, textShadow: `0 0 24px ${ACCENT}` }}>Kyron</span>
-          </h1>
-          <p style={{ margin: 0, fontSize: "clamp(9px,0.85vw,12px)", color: "rgba(255,255,255,0.5)" }}>
-            Tríptico Digital Interactivo · Demo Day Kurios x EY 2026
-          </p>
+          />
+          <div>
+            <h1
+              style={{
+                margin: 0,
+                fontSize: "clamp(18px,2.2vw,32px)",
+                fontWeight: 900,
+                color: "#FFFFFF",
+                letterSpacing: "-0.02em",
+              }}
+            >
+              System{" "}
+              <span style={{ color: ACCENT, textShadow: `0 0 24px ${ACCENT}` }}>Kyron</span>
+            </h1>
+            <p style={{ margin: 0, fontSize: "clamp(9px,0.85vw,12px)", color: "rgba(255,255,255,0.5)" }}>
+              Tríptico Digital Interactivo · Demo Day Kurios x EY 2026
+            </p>
+          </div>
         </div>
 
         {/* Toggle */}
